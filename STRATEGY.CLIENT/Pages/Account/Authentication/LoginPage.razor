@@ -1,0 +1,110 @@
+﻿@page "/"
+@layout AuthenticationLayout
+<div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="content-wrapper d-flex align-items-stretch auth auth-img-bg">
+            <div class="row flex-grow">
+                <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                    <div class="auth-form-transparent text-left p-3">
+                        <div class="brand-logo">
+                            <img src="images/logo-dark.svg" alt="logo">
+                        </div>
+                        <h4>Welcome back!</h4>
+                        <h6 class="font-weight-light">Happy to see you again!</h6>
+                       <EditForm Model="LoginModel" OnValidSubmit="LoginAsync">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label for="email"><b>Email/ID Number</b></label>
+                                        <RadzenTextBox  @bind-Value=LoginModel.Email class="form-control" id="EmailAddress" />
+                                        <ValidationMessage For="() => LoginModel.Email" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password"><b>Password</b></label>
+                                        <div class="position-relative">
+                                            <InputText @bind-Value=LoginModel.Password class="form-control" id="Password" type="password" />
+                                            <ValidationMessage For="() => LoginModel.Password" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="float:right;">
+
+                                            @if (ShowLoadingButton)
+                                            {
+                                                <ButtonLoadingSpinnerPage></ButtonLoadingSpinnerPage>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-primary" type="submit">Login</button>
+                                            }
+                                    </div>
+                                </EditForm>
+                    </div>
+                </div>
+                <div class="col-lg-6 login-half-bg d-flex flex-row">
+                    <p class="text-white font-weight-medium text-center flex-grow align-self-end">Copyright &copy; @DateTime.Now.Year  All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+        <!-- content-wrapper ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+</div>
+@code {
+    string? Message;
+    public LoginDTO LoginModel { get; set; } = new();
+
+    public bool ShowLoadingButton { set; get; } = false;
+
+    private async Task LoginAsync()
+    {
+        try
+        {
+            ShowLoadingButton = true;
+            var response = await accountService.LoginUserAsync(LoginModel);
+            if (response.Flag)
+            {
+                var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+                await customAuthStateProvider.UpdateAuthenticationState(new LocalStorageDTO()
+                    { Token = response.Token, RefreshToken = response.RefreshToken });
+
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Login Successful", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                Navmanager.NavigateTo("/home", forceLoad: true);
+            }
+            else
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+        }
+
+        ShowLoadingButton = false;
+    }
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await ClientAuthState).User;
+            bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+            if (isUserAuthenticated)
+                Navmanager.NavigateTo("/home", false, true);
+
+        }
+        catch { }
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        //console.Log($"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}");
+    }
+
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

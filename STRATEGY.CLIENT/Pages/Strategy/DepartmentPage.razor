@@ -1,0 +1,221 @@
+﻿@page "/managedepartment"
+<PageTitle>STRATEGY | Department</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage Department</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="Department" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@selectedDepartment
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@departments"
+                EmptyText="No Department to display at the moment"
+                TItem="Department" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="Department" Property="DepartmentId" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="Department" Property="DepartmentName" Title="Name" Width="60px" />
+        <RadzenDataGridColumn TItem="Department" Property="DepartmentManager" Title="Manager" Width="60px" />
+        <RadzenDataGridColumn Context="departments"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="departments">
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(departments))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(departments))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+<ScriptPage></ScriptPage>
+
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    Department department = new();
+    List<Department> departments = new();
+    IList<Department> selectedDepartment;
+
+
+    private IEnumerable<Department>? AvailableDepartment { get; set; }
+    private async Task GetDepartments()
+    {
+        departments = await strategyService.GetDepartmentAsync(UserId);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetDepartments();
+            selectedDepartment = new List<Department>() { departments.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+    async Task Save()
+    {
+        department.UpdatedBy = UserId;
+        try
+        {
+            if (string.IsNullOrEmpty(department.DepartmentName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all department details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (department.DepartmentId > 0)
+                response = await strategyService.UpdateDepartmentAsync(department);
+            else
+                response = await strategyService.CreateDepartmentAsync(department);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetDepartments();
+                department = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    private void EditClicked(Department inconDepartment)
+    {
+        department = inconDepartment;
+        ShowInlineDialog();
+    }
+
+    private void CreateClicked()
+    {
+        department = new();
+        ShowInlineDialog();
+    }
+
+
+    private void ViewDeleteClicked(Department inconDepartment)
+    {
+        department = inconDepartment;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete Department? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Name: <b>@department.DepartmentName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(department))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+    );
+    }
+
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(Department appDepartment)
+    {
+        var response = await strategyService.DeleteDepartmentAsync(appDepartment);
+        await GetDepartments();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Create Department", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm  TItem="Department" Data=department Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <RadzenFormField Text="Department Name" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="DepartmentName" @bind-Value=department.DepartmentName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="DepartmentName" Text="Department Name is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenFormField Text="Department Manager" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="DepartmentManager" @bind-Value=department.DepartmentManager />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="DepartmentManager" Text="Department Manager is required." />
+                    </Helper>
+                </RadzenFormField>
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

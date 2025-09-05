@@ -1,0 +1,273 @@
+﻿@page "/programschedule"
+<PageTitle>STRATEGY | Program Schedule</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Program Schedule</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="Program Schedule" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@selectedProgramSchedules
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@programSchedules"
+                EmptyText="No program schedule to display at the moment"
+                TItem="ProgramSchedule" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="ProgramSchedule" Property="ProgramScheduleId" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="ProgramSchedule" Property="ProgramRegistrarName" Title="RegistrarName" Width="60px" />
+        <RadzenDataGridColumn TItem="ProgramSchedule" Property="DetailedSO.DetailedTargetName" Title="DetailedTargetName" Width="60px" />
+        <RadzenDataGridColumn Context="programSchedules"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="programSchedules">
+                <RadzenButton Icon="visibility" ButtonStyle="Radzen.ButtonStyle.Info" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewClicked(programSchedules))">
+                </RadzenButton>
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(programSchedules))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(programSchedules))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+<ScriptPage></ScriptPage>
+
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private string CreateEditTitle = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    ProgramSchedule programSchedule = new();
+    List<ProgramSchedule> programSchedules = new();
+    IList<ProgramSchedule> selectedProgramSchedules;
+
+
+    DetailedSO detailedStrategicObjective = new();
+    List<DetailedSO> detailedStrategicObjectives = new();
+
+    private async Task GetProgramSchedules() => programSchedules = await strategyService.GetProgramScheduleAsync(UserId);
+    private async Task GetDetailedStrategicObjectives() => detailedStrategicObjectives = await strategyService.GetDetailedStrategicObjectivesAsync(UserId);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            await GetProgramSchedules();
+            await GetDetailedStrategicObjectives();
+
+
+            selectedProgramSchedules = new List<ProgramSchedule>() { selectedProgramSchedules.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+    async Task Save()
+    {
+        programSchedule.UpdatedBy = UserId;
+        try
+        {
+            if (string.IsNullOrEmpty(programSchedule.ProgramRegistrarName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all program schedule before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (programSchedule.ProgramScheduleId > 0)
+                response = await strategyService.UpdateProgramScheduleAsync(programSchedule);
+            else
+                response = await strategyService.CreateProgramScheduleAsync(programSchedule);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetProgramSchedules();
+                programSchedule = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    private void EditClicked(ProgramSchedule inconProgramSchedule)
+    {
+        CreateEditTitle = "Edit";
+        programSchedule = inconProgramSchedule;
+        ShowInlineDialog();
+    }
+
+    private void CreateClicked()
+    {
+        CreateEditTitle = "Create";
+        programSchedule = new();
+        ShowInlineDialog();
+    }
+
+    private void ViewClicked(ProgramSchedule inconProgramSchedule)
+    {
+        programSchedule = inconProgramSchedule;
+        ShowViewInlineDialog();
+    }
+
+    async Task ShowViewInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Program Schedule Display", ds =>
+    @<RadzenStack Gap="0.5rem" Style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif, 'Arial Narrow Bold', sans-serif;">
+        <RadzenCard Variant=Variant.Filled Style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;font-size:13px;">
+            <RadzenLabel><b>ID: </b> @programSchedule.ProgramScheduleId</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Registration Date: </b> @programSchedule.RegistrationDate</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Program Registrar Name: </b> @programSchedule.ProgramRegistrarName</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Detailed Target Name: </b> @programSchedule.DetailedSO.DetailedTargetName</RadzenLabel>
+
+        </RadzenCard>
+        <hr />
+
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Cancel" Icon="cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+            </RadzenStack>
+
+        </RadzenStack>
+    </RadzenStack>);
+    }
+
+
+
+    private void ViewDeleteClicked(ProgramSchedule inconProgramSchedule)
+    {
+        programSchedule = inconProgramSchedule;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete Detailed Strategic Objective? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Registrar Name: <b>@programSchedule.ProgramRegistrarName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(programSchedule))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+    );
+    }
+
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(ProgramSchedule appProgramSchedule)
+    {
+        var response = await strategyService.DeleteProgramScheduleAsync(appProgramSchedule);
+        await GetProgramSchedules();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync(CreateEditTitle + " Program Schedule", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm TItem="ProgramSchedule" Data=programSchedule Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <RadzenFormField Text="Registrar Name" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="ProgramRegistrarName" @bind-Value=programSchedule.ProgramRegistrarName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="ProgramRegistrarName" Text="Registrar Name is required." />
+                    </Helper>
+                </RadzenFormField>
+                <!--Dropdown Input Field-->
+                <RadzenDropDown Data=@detailedStrategicObjectives
+                                @bind-Value=programSchedule.DetailedId
+                                TextProperty="DetailedTargetName"
+                                AllowFiltering="true"
+                                FilterAsYouType="true"
+                                FilterPlaceholder="Select Detailed Strategic Objective"
+                                Placeholder="Select Detailed Strategic Objective"
+                                ValueProperty="DetailedId"
+                                Name="DetailedTargetName">
+                </RadzenDropDown>
+                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DetailedTargetName" Text="Detailed Target Name is required." />
+
+                <RadzenFormField Text="Registration Date" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenDatePicker @bind-Value=programSchedule.RegistrationDate Name="RegistrationDate" AllowClear="true" ShowButton="false" />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="RegistrationDate" Text="Registration Date is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

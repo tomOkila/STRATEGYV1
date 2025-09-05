@@ -1,0 +1,29 @@
+﻿@page "/authenticate"
+
+
+@code {
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+            var result = (await ClientAuthState!).User.Identity!.IsAuthenticated;
+            if (result == true)
+            {
+                //get the token stored in the local storage
+                var response = await customAuthStateProvider.GetAuthenticationStateAsync();
+                Navmanager.NavigateTo("/", false, true);
+            }
+            else
+                Navmanager.NavigateTo("login", false, true);
+
+        }
+        catch
+        {
+            Navmanager.NavigateTo("login", false, true);
+        }
+    }
+}
+

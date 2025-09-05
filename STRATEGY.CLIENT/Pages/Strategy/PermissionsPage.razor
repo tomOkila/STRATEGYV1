@@ -1,0 +1,210 @@
+﻿@page "/managepermission"
+<PageTitle>STRATEGY | Permissions</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage User Permissions</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="Application Permissions" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@selectedPermissions
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@apppermissions"
+                EmptyText="No permission to display at the moment"
+                TItem="Permissions" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="Permissions" Property="PermissionId" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="Permissions" Property="PermissionName" Title="Name" Width="60px" />
+        <RadzenDataGridColumn Context="apppermissions"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="apppermissions">
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(apppermissions))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(apppermissions))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+<ScriptPage></ScriptPage>
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    Permissions apppermission = new();
+    List<Permissions> apppermissions = new();
+    IList<Permissions> selectedPermissions;
+
+
+    private IEnumerable<Permissions>? AvailablePermissions { get; set; }
+    private async Task GetApplicationPermissions()
+    {
+        apppermissions = await accountService.GetPermissionsAsync(UserId);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetApplicationPermissions();
+            selectedPermissions = new List<Permissions>() { apppermissions.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+    async Task Save()
+    {
+        apppermission.UpdatedBy = UserId;
+        try
+        {
+            if (string.IsNullOrEmpty(apppermission.PermissionName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all permission details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (apppermission.PermissionId > 0)
+                response = await accountService.UpdatePermissionsAsync(apppermission);
+            else
+                response = await accountService.CreatePermissionsAsync(apppermission);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetApplicationPermissions();
+                apppermission = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    private void EditClicked(Permissions inconPermissions)
+    {
+        apppermission = inconPermissions;
+        ShowInlineDialog();
+    }
+
+    private void CreateClicked()
+    {
+        apppermission = new();
+        ShowInlineDialog();
+    }
+
+
+    private void ViewDeleteClicked(Permissions inconPermissions)
+    {
+        apppermission = inconPermissions;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete User Role? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Permission: <b>@apppermission.PermissionName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(apppermission))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+    );
+    }
+
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(Permissions appPermissions)
+    {
+        var response = await accountService.DeletePermissionsAsync(appPermissions);
+        await GetApplicationPermissions();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Create Permission", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm Name="UserRoleDialog" TItem="Permissions" Data=apppermission Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <RadzenFormField Text="PermissionName" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="PermissionName" @bind-Value=apppermission.PermissionName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="PermissionName" Text="Permission Name is required." />
+                    </Helper>
+                </RadzenFormField>
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

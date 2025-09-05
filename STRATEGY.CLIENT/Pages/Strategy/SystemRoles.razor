@@ -1,0 +1,210 @@
+﻿@page "/manageroles"
+<PageTitle>STRATEGY | Roles</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage User Roles</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem  Text="Application Roles" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+    
+</div>
+
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid id="mytable"  AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@selectedApproles
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@approles"
+                EmptyText="No role to display at the moment"
+                TItem="AppRoles" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="AppRoles" Property="Id" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="AppRoles" Property="RoleName" Title="Name" Width="60px" />
+        <RadzenDataGridColumn Context="AppRoles"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="approles">
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(approles))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(approles))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+<ScriptPage></ScriptPage>
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    AppRoles approle = new();
+    List<AppRoles> approles = new();
+    IList<AppRoles> selectedApproles;
+
+
+    private IEnumerable<AppRoles>? AvailableRoles { get; set; }
+    private async Task GetApplicationRoles()
+    {
+        approles = await accountService.GetRolesAsync(UserId);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetApplicationRoles();
+            selectedApproles = new List<AppRoles>() { approles.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+    async Task Save()
+    {
+        approle.UpdatedBy = UserId;
+        try
+        {
+            if (string.IsNullOrEmpty(approle.RoleName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all role details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (approle.Id > 0)
+                response = await accountService.UpdateUserRoleAsync(approle);
+            else
+                response = await accountService.CreateRoleAsync(approle);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetApplicationRoles();
+                approle = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    private void EditClicked(AppRoles inconRoles)
+    {
+        approle = inconRoles;
+        ShowInlineDialog();
+    }
+
+    private void CreateClicked()
+    {
+        approle = new();
+        ShowInlineDialog();
+    }
+
+
+    private void ViewDeleteClicked(AppRoles inconRoles)
+    {
+        approle = inconRoles;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete User Role? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Role: <b>@approle.RoleName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(approle))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+        );
+    }
+
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(AppRoles appRoles)
+    {
+        var response = await accountService.DeleteRoleAsync(appRoles);
+        await GetApplicationRoles();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Create Role", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm Name="UserRoleDialog" TItem="AppRoles" Data=approle Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <RadzenFormField Text="RoleName" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="RoleName" @bind-Value=approle.RoleName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="RoleName" Text="Role name is required." />
+                    </Helper>
+                </RadzenFormField>
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

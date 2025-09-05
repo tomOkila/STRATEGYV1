@@ -1,0 +1,64 @@
+﻿@inherits LayoutComponentBase
+<div class="container-scroller">
+       <TopMenuNavigation></TopMenuNavigation>
+        <div class="container-fluid page-body-wrapper">
+         <SidebarNavigation></SidebarNavigation>
+          <!-- partial -->
+          <div class="main-panel">
+            <div class="content-wrapper">
+                @Body
+            </div>
+            <!-- content-wrapper ends -->
+             <FooterNavigationPage></FooterNavigationPage>
+            <!-- partial -->
+          </div>
+          <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+  </div>
+
+<!-- ./wrapper -->
+<RadzenNotification />
+
+<RadzenDialog />
+<RadzenComponents />
+
+<ScriptPage></ScriptPage>
+
+@code{
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         await js.InvokeVoidAsync("setBrowserZoom", 0.9); // 0.8 for 80%
+    //     }
+    // }
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Start the timer for idle state
+        await js.InvokeVoidAsync("initializeInactivityTimer", DotNetObjectReference.Create(this));
+    }
+
+
+    [JSInvokable]
+    public async Task Logout()
+    {
+        var authState = (await ClientAuthState!).User;
+        if (authState.Identity!.IsAuthenticated)
+        {
+            Navmanager.NavigateTo("logout");
+        }
+    }
+}
+
+@*
+<script>
+    function setBrowserZoom(zoomLevel) {
+        document.body.style.zoom = zoomLevel; // For WebKit and some other browsers
+        document.body.style.MozTransform = 'scale(' + zoomLevel + ')'; // For Firefox
+        document.body.style.MozTransformOrigin = 'top left';
+    }
+</script> *@

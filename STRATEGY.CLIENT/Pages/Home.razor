@@ -1,0 +1,273 @@
+﻿@page "/home"
+<PageTitle>Home</PageTitle>
+<style type="text/css">
+    .stats-card {
+        border: none;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, .1);
+        }
+
+    .card-hover-primary:hover {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+    }
+
+    .card-hover-success:hover {
+        background: linear-gradient(45deg, #1cc88a, #169a6b);
+    }
+
+    .card-hover-info:hover {
+        background: linear-gradient(45deg, #36b9cc, #258391);
+    }
+
+    .card-hover-warning:hover {
+        background: linear-gradient(45deg, #f6c23e, #dda20a);
+    }
+
+    .stats-card:hover .text-primary,
+    .stats-card:hover .text-success,
+    .stats-card:hover .text-info,
+    .stats-card:hover .text-warning,
+    .stats-card:hover .text-muted,
+    .stats-card:hover .card-title {
+        color: white !important;
+    }
+
+    .icon-circle {
+        height: 60px;
+        width: 60px;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        background: rgba(0, 0, 0, .05);
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover .icon-circle {
+        background: rgba(255, 255, 255, .2);
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, .05);
+    }
+
+    .progress-bar {
+        border-radius: 4px;
+    }
+
+    .stat-change {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.9rem;
+    }
+
+    .trend-icon {
+        font-size: 0.8rem;
+    }
+
+    .mini-chart {
+        height: 50px;
+        margin-top: 10px;
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+    }
+
+    .chart-bar {
+        flex: 1;
+        background: rgba(0, 0, 0, .05);
+        border-radius: 3px 3px 0 0;
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover .chart-bar {
+        background: rgba(255, 255, 255, .2);
+    }
+</style>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Hi, Welcome Back!</h4>
+        <p class="font-weight-normal mb-2 text-muted">@DateTime.Now.ToString("MMMM").ToUpper(), @DateTime.Now.Day, @DateTime.Now.Year</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Revenue Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-primary shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Departments</b></div>
+                        <div class="stat-value text-primary">42</div>
+                        <div class="stat-change text-success">
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-building text-primary"></i>
+                    </div>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-success shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Employees</b></div>
+                        <div class="stat-value text-success">18,245</div>
+                        <div class="stat-change text-success">
+                        
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-users text-success"></i>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasks Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-info shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Users</b></div>
+                        <div class="stat-value text-info">156</div>
+                        <div class="stat-change text-danger">
+                          
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-user text-info"></i>
+                    </div>
+                </div>
+             
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversion Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-warning shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Roles</b></div>
+                        <div class="stat-value text-warning">24</div>
+                        <div class="stat-change text-success">
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-user-tag text-warning"></i>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row g-4">
+    <!-- Revenue Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-info shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Pillars</b></div>
+                        <div class="stat-value text-info">345</div>
+                        <div class="stat-change text-success">
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-chess text-info"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-warning shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Strategic</b></div>
+                        <div class="stat-value text-warning">18,245</div>
+                        <div class="stat-change text-success">
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-chess-board text-warning"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasks Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-primary shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Detailed</b></div>
+                        <div class="stat-value text-primary">156</div>
+                        <div class="stat-change text-danger">
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-chess-queen text-primary"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversion Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <div class="card stats-card card-hover-success shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Schedules</b></div>
+                        <div class="stat-value text-success">24</div>
+                        <div class="stat-change text-success">
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-clipboard-list text-success"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

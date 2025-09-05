@@ -1,0 +1,272 @@
+﻿@page "/manageemployees"
+<PageTitle>STRATEGY | Employees</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage Employee</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="Employee" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+
+@if (TagIds.Contains(1) || TagIds.Contains(2))
+{
+    <RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Medium" Style="margin:10px;margin-left:5px;" />
+}        
+<RadzenDataGrid  id="mytable" AllowFiltering="true" AllowColumnResize="false"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@employees"
+                EmptyText="No employee records at the moment"
+                TItem="Employee">
+    <Columns>
+        <RadzenDataGridColumn TItem="Employee" Property="EmployeeId" Title="ID" Frozen="true" Width="160px" />
+        <RadzenDataGridColumn TItem="Employee" Property="EmployeeName" Title="Name" Width="160px" />
+        <RadzenDataGridColumn TItem="Employee" Property="EmailAddress" Title="EmailAddress" Width="200px" />
+        <RadzenDataGridColumn Context="Employee" Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="employees">
+                @if (TagIds.Contains(1) || TagIds.Contains(2))
+                {
+                    <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Medium" Click="@(args =>EditClicked(employees))">
+                    </RadzenButton>
+                    <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Medium" Click="@(args =>ViewDeleteClicked(employees))">
+                    </RadzenButton>
+                }
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+<ScriptPage></ScriptPage>
+
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private string SessionRoleName = string.Empty;
+    private string PermissionData = string.Empty;
+    List<int> TagIds = new List<int>();
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    Employee employee = new();
+    List<Employee> employees = new();
+    IList<Employee> selectedEmployees;
+
+    Department department = new();
+    List<Department> departments = new();
+
+
+    private async Task GetDepartments()
+    {
+        departments = await strategyService.GetDepartmentAsync(UserId);
+    }
+
+    private async Task GetEmployees()
+    {
+        employees = await strategyService.GetEmployeeAsync(UserId);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            SessionRoleName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.StreetAddress).Value;
+            PermissionData = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value;
+
+            //list the user permissions as below
+            TagIds = PermissionData.Split(',').Select(int.Parse).ToList();
+
+            //load system roles
+            await GetEmployees();
+            await GetDepartments();
+            selectedEmployees = new List<Employee>() { employees.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+    async Task Save()
+    {
+        //pass userId for each request
+        employee.UpdatedBy = UserId;
+
+        try
+        {
+            if (string.IsNullOrEmpty(employee.EmployeeName) || string.IsNullOrEmpty(employee.EmailAddress) || employee.DepartmentID == 0)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all employee details before proceeding.", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+            var response = new GeneralResponse(false, null!);
+            if (employee.EmployeeId > 0)
+                response = await strategyService.UpdateEmployeeAsync(employee);
+            else
+                response = await strategyService.CreateEmployeeAsync(employee);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetEmployees();
+                department = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    private void EditClicked(Employee incoEmployees)
+    {
+        employee = incoEmployees;
+        ShowInlineDialog();
+    }
+
+    private void CreateClicked()
+    {
+        employee = new();
+        ShowInlineDialog();
+    }
+
+
+    private void ViewDeleteClicked(Employee inconEmployee)
+    {
+        employee = inconEmployee;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete Employee? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Name: <b>@employee.EmployeeName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(employee))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+    );
+    }
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(Employee employee)
+    {
+        var response = await strategyService.DeleteEmployeeAsync(employee);
+        await GetEmployees();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Employee deleted successfully.", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Create Employee", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm Name="EmployeeDialog" TItem="Employee" Data=employee Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <!--Normal Input Field-->
+                <RadzenFormField Text="Employee Name" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="EmployeeName" @bind-Value=employee.EmployeeName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="EmployeeName" Text="Employee Name is required." />
+                    </Helper>
+                </RadzenFormField>
+                <RadzenFormField Text="Email" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="EmailAddress" @bind-Value=employee.EmailAddress />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="EmailAddress" Text="Email Address is required." />
+                        <RadzenEmailValidator Component="EmailAddress" Text="Email Address is required." />
+                    </Helper>
+                </RadzenFormField>
+                <RadzenFormField Text="ID Number" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="IDNumber" @bind-Value=employee.IDNumber />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="IDNumber" Text="ID Number is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenFormField Text="Registration Date" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenDatePicker @bind-Value=employee.RegistrationDate Name="RegistrationDate" AllowClear="true" ShowButton="false" />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="RegistrationDate" Text="Registration Date is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <!--Dropdown Input Field-->
+                <RadzenDropDown Data=@departments
+                                @bind-Value=employee.DepartmentID
+                                TextProperty="DepartmentName"
+                                AllowFiltering="true"
+                                FilterAsYouType="true"
+                                FilterPlaceholder="Select Department"
+                                Placeholder="Select Department"
+                                ValueProperty="DepartmentId"
+                                Name="DepartmentName">
+                </RadzenDropDown>
+                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DepartmentName" Text="Department is required." />
+
+             
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

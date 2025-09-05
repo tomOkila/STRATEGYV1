@@ -1,0 +1,284 @@
+﻿@page "/managestrategicobjectivesdetails"
+<PageTitle>STRATEGY | Strategic Objectives Details</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage Strategic Objectives Details</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="Strategic Objectives Details" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@selectedStrategicObjectiveDetails
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@strategicObjectiveDetails"
+                EmptyText="No detailed strategic objective to display at the moment"
+                TItem="DetailedSO" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="DetailedSO" Property="DetailedId" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="DetailedSO" Property="DetailedTargetName" Title="TargetName" Width="60px" />
+        <RadzenDataGridColumn TItem="DetailedSO" Property="StrategicObjective.TargetName" Title="Strategic Objective" Width="60px" />
+        <RadzenDataGridColumn Context="strategicObjectiveDetails"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="strategicObjectiveDetails">
+                <RadzenButton Icon="visibility" ButtonStyle="Radzen.ButtonStyle.Info" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewClicked(strategicObjectiveDetails))">
+                </RadzenButton>
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(strategicObjectiveDetails))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(strategicObjectiveDetails))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+<ScriptPage></ScriptPage>
+
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private string CreateEditTitle = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    DetailedSO strategicObjectiveDetail = new();
+    List<DetailedSO> strategicObjectiveDetails = new();
+    IList<DetailedSO> selectedStrategicObjectiveDetails;
+
+
+    StrategicObjective strategicObjective = new();
+    List<StrategicObjective> strategicObjectives = new();
+
+    private async Task GetDetailedStrategicObjectives() => strategicObjectiveDetails = await strategyService.GetDetailedStrategicObjectivesAsync(UserId);
+    private async Task GetStrategicObjectives() => strategicObjectives = await strategyService.GetStrategicObjectivesAsync(UserId);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetDetailedStrategicObjectives();
+            await GetStrategicObjectives();
+
+            selectedStrategicObjectiveDetails = new List<DetailedSO>() { strategicObjectiveDetails.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+    async Task Save()
+    {
+        strategicObjectiveDetail.UpdatedBy = UserId;
+        try
+        {
+            if (string.IsNullOrEmpty(strategicObjectiveDetail.DetailedTargetName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all detailed strategic objective details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (strategicObjectiveDetail.DetailedId > 0)
+                response = await strategyService.UpdateDetailedStrategicObjectivesAsync(strategicObjectiveDetail);
+            else
+                response = await strategyService.CreateDetailedStrategicObjectivesAsync(strategicObjectiveDetail);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetDetailedStrategicObjectives();
+                strategicObjective = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    private void EditClicked(DetailedSO inconDetailedSO)
+    {
+        CreateEditTitle = "Edit";
+        strategicObjectiveDetail = inconDetailedSO;
+        ShowInlineDialog();
+    }
+
+    private void CreateClicked()
+    {
+        CreateEditTitle = "Create";
+        strategicObjectiveDetail = new();
+        ShowInlineDialog();
+    }
+
+    private void ViewClicked(DetailedSO inconDetailedSO)
+    {
+        strategicObjectiveDetail = inconDetailedSO;
+        ShowViewInlineDialog();
+    }
+
+    async Task ShowViewInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Detailed Strategic Objectives Display", ds =>
+    @<RadzenStack Gap="0.5rem" Style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif, 'Arial Narrow Bold', sans-serif;">
+        <RadzenCard Variant=Variant.Filled Style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;font-size:13px;">
+            <RadzenLabel><b>ID: </b> @strategicObjectiveDetail.DetailedId</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Target Name: </b> @strategicObjectiveDetail.DetailedTargetName</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Pillar Name: </b> @strategicObjectiveDetail.StrategicObjective.TargetName</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Detailed Target History: </b> @strategicObjectiveDetail.DetailedTargetHistory</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Detailed Scorer Name: </b> @strategicObjectiveDetail.DetailedScorerName</RadzenLabel>
+        </RadzenCard>
+        <hr />
+
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Cancel" Icon="cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+            </RadzenStack>
+
+        </RadzenStack>
+    </RadzenStack>);
+    }
+
+
+
+    private void ViewDeleteClicked(DetailedSO inconDetailedSO)
+    {
+        strategicObjectiveDetail = inconDetailedSO;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete Detailed Strategic Objective? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Detailed TargetName: <b>@strategicObjectiveDetail.DetailedTargetName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(strategicObjectiveDetail))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+        );
+    }
+
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(DetailedSO appDetailedSO)
+    {
+        var response = await strategyService.DeleteDetailedStrategicObjectivesAsync(appDetailedSO);
+        await GetStrategicObjectives();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync(CreateEditTitle + " Detailed Strategic Objective", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm TItem="DetailedSO" Data=strategicObjectiveDetail Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <RadzenFormField Text="Target Name" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="TargetName" @bind-Value=strategicObjectiveDetail.DetailedTargetName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="TargetName" Text="Detailed Target Name is required." />
+                    </Helper>
+                </RadzenFormField>
+                <!--Dropdown Input Field-->
+                <RadzenDropDown Data=@strategicObjectives
+                                @bind-Value=strategicObjectiveDetail.SOId
+                                TextProperty="TargetName"
+                                AllowFiltering="true"
+                                FilterAsYouType="true"
+                                FilterPlaceholder="Select Strategic Objective"
+                                Placeholder="Select Strategic Objective"
+                                ValueProperty="SOId"
+                                Name="TargetName">
+                </RadzenDropDown>
+                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="TargetName" Text="Target Name is required." />
+
+                <RadzenFormField Text="Detailed Target History" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="DetailedTargetHistory" @bind-Value=strategicObjectiveDetail.DetailedTargetHistory />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="DetailedTargetHistory" Text="Detailed Target History is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenFormField Text="Detailed Scorer Name" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="DetailedScorerName" @bind-Value=strategicObjectiveDetail.DetailedScorerName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="DetailedScorerName" Text="Detailed Scorer Name is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strategic Plan- Home</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/app.css" />
+
+    <!-- base:css -->
+    <link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="vendors/feather/feather.css">
+    <link rel="stylesheet" href="vendors/base/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <link rel="stylesheet" href="vendors/flag-icon-css/css/flag-icon.min.css" />
+    <link rel="stylesheet" href="vendors/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars-o.css">
+    <link rel="stylesheet" href="vendors/jquery-bar-rating/fontawesome-stars.css">
+    <link href="vendors/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="images/favicon.png" />
+
+    <!--For Radzen component-->
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
+
+    <style type="text/css">
+
+        .validation-message {
+            color: red;
+            font-size: small;
+            font-weight: bold
+        }
+
+        .rz-column-title-content {
+            font-weight: bold;
+        }
+
+        #mytable .rz-grid-table-fixed {
+            table-layout: auto;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+
+
+    <!-- base:js -->
+    <script src="vendors/base/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
+    <script src="js/off-canvas.js"></script>
+    <script src="js/hoverable-collapse.js"></script>
+    <script src="js/template.js"></script>
+    <!-- endinject -->
+    <!-- plugin js for this page -->
+    <script src="vendors/chart.js/Chart.min.js"></script>
+    <script src="vendors/jquery-bar-rating/jquery.barrating.min.js"></script>
+    <!-- End plugin js for this page -->
+    <!-- Custom js for this page-->
+    <script src="js/dashboard.js"></script>
+    <!-- End custom js for this page-->
+
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+
+    <script src="js/Utilities.js"></script>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+
+</body>
+
+</html>

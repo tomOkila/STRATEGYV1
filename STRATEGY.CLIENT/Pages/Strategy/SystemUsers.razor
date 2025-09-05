@@ -1,0 +1,320 @@
+﻿@page "/manageusers"
+<PageTitle>STRATEGY | Users</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage Application Users</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem  Text="Application Users" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+    
+</div>
+
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@getusers"
+                EmptyText="No users to display at the moment"
+                TItem="GetUserDTO" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="GetUserDTO" Property="Id" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="GetUserDTO" Property="Name" Title="Name" Width="60px" />
+        <RadzenDataGridColumn TItem="GetUserDTO" Property="Email" Title="Email" Width="60px" />
+        <RadzenDataGridColumn TItem="GetUserDTO" Property="RoleName" Title="Role" Width="60px" />
+        <RadzenDataGridColumn Context="User"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="getusers">
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(getusers))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(getusers))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+<ScriptPage></ScriptPage>
+
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+    List<AppRoles> approles = new();
+
+    List<RegisterUserDTO> appusers = new();
+    RegisterUserDTO appuser = new();
+    IList<RegisterUserDTO> selectedAppusers;
+
+    GetUserDTO getuser = new();
+    List<GetUserDTO> getusers = new();
+
+    Permissions permission = new();
+    List<Permissions> permissions = new();
+
+
+    private IEnumerable<AppRoles>? AvailableRoles { get; set; }
+    private async Task GetApplicationRoles() => approles = await accountService.GetRolesAsync(UserId);
+    private async Task GetApplicationUsers() => getusers = await accountService.GetUsersAsync(UserId);
+    private async Task GetApplicationPermissions() => permissions = await accountService.GetPermissionsAsync(UserId);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+        //load system roles
+        await GetApplicationRoles();
+        await GetApplicationUsers();
+        await GetApplicationPermissions();
+        selectedAppusers = new List<RegisterUserDTO>() { appusers.FirstOrDefault() };
+    }
+
+
+    private void CreateClicked()
+    {
+        appuser = new();
+        ShowInlineDialog();
+    }
+
+    private void EditClicked(GetUserDTO inconRoles1)
+    {
+        RegisterUserDTO inconRoles = new RegisterUserDTO();
+        inconRoles.Id = inconRoles1.Id;
+        inconRoles.Name = inconRoles1.Name;
+        inconRoles.Email = inconRoles1.Email;
+        inconRoles.Password = inconRoles1.Password;
+        inconRoles.ConfirmPassword = inconRoles1.ConfirmPassword;
+        inconRoles.RoleId = inconRoles1.RoleId;
+        inconRoles.PermissionId = inconRoles1.PermissionId;
+
+        appuser = inconRoles;
+        ShowInlineDialog();
+    }
+
+    private void ViewDeleteClicked(GetUserDTO inconGetUserDTO)
+    {
+        getuser = inconGetUserDTO;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete User? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Name: <b>@getuser.Name</b></p>
+        <p style="font-size:20px;">Name: <b>@getuser.Email</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(getuser))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+    );
+    }
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(GetUserDTO registerUserDTO1)
+    {
+        AppUsers appUsers = new AppUsers();
+        appUsers.UserId = registerUserDTO1.Id;
+        appUsers.Name = registerUserDTO1.Name;
+        appUsers.Email = registerUserDTO1.Email;
+        appUsers.Password = registerUserDTO1.Password;
+        
+
+        var response = await accountService.DeleteUserAsync(appUsers);
+        await GetApplicationUsers();
+        DialogService1.Close();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+
+    async Task Save()
+    {
+        try
+        {
+            //confirm if the user is new or existing
+            if (appuser.Id <= 0)
+            {
+                if (appuser.RoleId == 0 ||
+      string.IsNullOrEmpty(appuser.Name) ||
+      string.IsNullOrEmpty(appuser.Email) ||
+      string.IsNullOrEmpty(appuser.Password))
+                {
+                    ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all user details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                    return;
+                }
+            }
+            else
+            {
+                if (
+        string.IsNullOrEmpty(appuser.Name) ||
+        string.IsNullOrEmpty(appuser.Email))
+                {
+                    ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all user details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                    return;
+                }
+            }
+
+            if (appuser.Password != appuser.ConfirmPassword)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"The password and confirm password have to be the same.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            //check if user if participant or not
+
+            var response = new GeneralResponse(false, null!);
+            if (appuser.Id > 0)
+            {
+                response = await accountService.UpdateUserAsync(appuser, UserId);
+            }
+            else
+                response = await accountService.RegisterUserAsync(appuser);
+
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetApplicationUsers();
+                appuser = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Create User", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm TItem="RegisterUserDTO" Data=appuser Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <RadzenFormField Text="Name" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox id="Name" Name="Name" @bind-Value=appuser.Name />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="Name" Text="Name is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenFormField Text="Email" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox id="Email" Name="Email" @bind-Value=appuser.Email />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="Email" Text="Email is required." />
+                        <RadzenEmailValidator Component="Email" Text="Email address not in the correct format." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenFormField Text="Password" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenPassword id="Password" Name="Password" @bind-Value=appuser.Password />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="Password" Text="Password is required." />
+
+                    </Helper>
+                </RadzenFormField>
+                <RadzenFormField Text="ConfirmPassword" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenPassword id="ConfirmPassword" Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm password is required." />
+                        <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(appuser.ConfirmPassword)) Value=appuser.Password Component="ConfirmPassword" Text="Passwords should be the same" Style="position: absolute" />
+                    </Helper>
+                </RadzenFormField>
+
+                <!--Dropdown Input Field-->
+                <RadzenDropDown Data=@approles
+                                @bind-Value=appuser.RoleId
+                                TextProperty="RoleName"
+                                AllowFiltering="true"
+                                FilterAsYouType="true"
+                                FilterPlaceholder="Select Role"
+                                Placeholder="Select Role"
+                                ValueProperty="Id"
+                                Name="RoleName">
+                </RadzenDropDown>
+                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="RoleName" Text="Rolename is required." />
+
+
+                <RadzenDropDown @bind-Value=@appuser.PermissionId 
+                                Data=@permissions 
+                                TextProperty="@nameof(Permissions.PermissionName)" 
+                                ValueProperty="@nameof(Permissions.PermissionId)"
+                                Name="PermissionName"
+                                Multiple=true 
+                                AllowClear=true 
+                                Placeholder="Select Permisssion">
+                                </RadzenDropDown>
+                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="PermissionName" Text="Permissionname is required." />
+
+
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

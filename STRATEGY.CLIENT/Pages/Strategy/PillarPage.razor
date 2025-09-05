@@ -1,0 +1,228 @@
+﻿@page "/managepillar"
+<PageTitle>STRATEGY | Pillars</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage Pillars</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="Pillars" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@selectedPillars
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@pillars"
+                EmptyText="No pillar to display at the moment"
+                TItem="Pillar" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="Pillar" Property="PillarID" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="Pillar" Property="PillarName" Title="Name" Width="60px" />
+        <RadzenDataGridColumn TItem="Pillar" Property="PillarRecorder" Title="PillarRecorder" Width="60px" />
+        <RadzenDataGridColumn Context="pillars"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="pillars">
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(pillars))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(pillars))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+<ScriptPage></ScriptPage>
+
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    Pillar pillar = new();
+    List<Pillar> pillars = new();
+    IList<Pillar> selectedPillars;
+
+
+    private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetPillars();
+            selectedPillars = new List<Pillar>() { pillars.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+    async Task Save()
+    {
+        pillar.UpdatedBy = UserId;
+        try
+        {
+            if (string.IsNullOrEmpty(pillar.PillarName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all pillar details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (pillar.PillarID > 0)
+                response = await strategyService.UpdatePillarAsync(pillar);
+            else
+                response = await strategyService.CreatePillarAsync(pillar);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetPillars();
+                pillar = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    private void EditClicked(Pillar inconPillar)
+    {
+        pillar = inconPillar;
+        ShowInlineDialog();
+    }
+
+    private void CreateClicked()
+    {
+        pillar = new();
+        ShowInlineDialog();
+    }
+
+
+    private void ViewDeleteClicked(Pillar inconPillar)
+    {
+        pillar = inconPillar;
+        ShowInlineDeleteTaskDialog();
+    }
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete PIllar? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p style="font-size:20px;">Name: <b>@pillar.PillarName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(pillar))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+        );
+    }
+
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(Pillar appPillar)
+    {
+        var response = await strategyService.DeletePillarAsync(appPillar);
+        await GetPillars();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+
+    async Task ShowInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Create Pillar", ds =>
+    @<RadzenStack>
+        <RadzenTemplateForm TItem="Pillar" Data=pillar Submit="Save" InvalidSubmit="OnInvalidSubmit">
+            <RadzenStack>
+                <RadzenFormField Text="Pillar Name" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="PillarName" @bind-Value=pillar.PillarName />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="PillarName" Text="Pillar Name is required." />
+                    </Helper>
+                </RadzenFormField>
+
+                <RadzenFormField Text="Registration Date" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenDatePicker @bind-Value=pillar.RegistrationDate Name="RegistrationDate" AllowClear="true" ShowButton="false" />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="RegistrationDate" Text="Registration Date is required." />
+                    </Helper>
+                </RadzenFormField>
+
+
+                <RadzenFormField Text="Pillar Recorder" Variant="Variant.Outlined">
+                    <ChildContent>
+                        <RadzenTextBox Name="PillarRecorder" @bind-Value=pillar.PillarRecorder />
+                    </ChildContent>
+                    <Helper>
+                        <RadzenRequiredValidator Component="PillarRecorder" Text="Pillar recorder is required." />
+                    </Helper>
+                </RadzenFormField>
+                <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenStack>);
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}
