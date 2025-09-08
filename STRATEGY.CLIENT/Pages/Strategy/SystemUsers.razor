@@ -14,7 +14,7 @@
 </div>
 
 <RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
-<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+<RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
                 AllowAlternatingRows="false"
                 AllowSorting="true"
                 AllowMultiColumnSorting="true"
@@ -48,7 +48,7 @@
         </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
-<ScriptPage></ScriptPage>
+@* <ScriptPage></ScriptPage> *@
 
 @code {
     private string SessionName = string.Empty;
@@ -68,11 +68,15 @@
     Permissions permission = new();
     List<Permissions> permissions = new();
 
+    Pillar pillar = new();
+    List<Pillar> pillars = new();
+
 
     private IEnumerable<AppRoles>? AvailableRoles { get; set; }
     private async Task GetApplicationRoles() => approles = await accountService.GetRolesAsync(UserId);
     private async Task GetApplicationUsers() => getusers = await accountService.GetUsersAsync(UserId);
     private async Task GetApplicationPermissions() => permissions = await accountService.GetPermissionsAsync(UserId);
+    private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
 
 
     protected override async Task OnInitializedAsync()

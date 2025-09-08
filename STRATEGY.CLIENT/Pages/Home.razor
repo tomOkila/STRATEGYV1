@@ -115,7 +115,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Departments</b></div>
-                        <div class="stat-value text-primary">42</div>
+                        <div class="stat-value text-primary">@departments.Count()</div>
                         <div class="stat-change text-success">
                         </div>
                     </div>
@@ -135,7 +135,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Employees</b></div>
-                        <div class="stat-value text-success">18,245</div>
+                        <div class="stat-value text-success">@employees.Count()</div>
                         <div class="stat-change text-success">
                         
                         </div>
@@ -156,7 +156,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Users</b></div>
-                        <div class="stat-value text-info">156</div>
+                        <div class="stat-value text-info">@getusers.Count()</div>
                         <div class="stat-change text-danger">
                           
                         </div>
@@ -177,7 +177,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Roles</b></div>
-                        <div class="stat-value text-warning">24</div>
+                        <div class="stat-value text-warning">@approles.Count()</div>
                         <div class="stat-change text-success">
                         </div>
                     </div>
@@ -198,7 +198,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Pillars</b></div>
-                        <div class="stat-value text-info">345</div>
+                        <div class="stat-value text-info">@pillars.Count()</div>
                         <div class="stat-change text-success">
                         </div>
                     </div>
@@ -218,7 +218,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Strategic</b></div>
-                        <div class="stat-value text-warning">18,245</div>
+                        <div class="stat-value text-warning">@strategicObjectives.Count()</div>
                         <div class="stat-change text-success">
                         </div>
                     </div>
@@ -238,7 +238,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Detailed</b></div>
-                        <div class="stat-value text-primary">156</div>
+                        <div class="stat-value text-primary">@strategicObjectiveDetails.Count()</div>
                         <div class="stat-change text-danger">
                         </div>
                     </div>
@@ -258,7 +258,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <div class="text-muted text-uppercase fw-bold small"><b>Schedules</b></div>
-                        <div class="stat-value text-success">24</div>
+                        <div class="stat-value text-success">@programSchedules.Count()</div>
                         <div class="stat-change text-success">
                         </div>
                     </div>
@@ -271,3 +271,105 @@
         </div>
     </div>
 </div>
+
+<div class="row g-4">
+    <!-- Revenue Card -->
+    <div class="col-xl-3 col-md-6" style="padding:15px;">
+        <a href="manageplandetails" style="text-decoration:none;">
+        <div class="card stats-card card-hover-info shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted text-uppercase fw-bold small"><b>Plan</b></div>
+                        <div class="stat-value text-info">@strategicPlanResponses.Count()</div>
+                        <div class="stat-change text-success">
+                        </div>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-chess text-info"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </a>
+    </div>
+</div>
+
+@code{
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+    Department department = new();
+    List<Department> departments = new();
+
+    Employee employee = new();
+    List<Employee> employees = new();
+
+    AppRoles approle = new();
+    List<AppRoles> approles = new();
+
+    GetUserDTO getuser = new();
+    List<GetUserDTO> getusers = new();
+
+    Permissions permission = new();
+    List<Permissions> permissions = new();
+
+    StrategicObjective strategicObjective = new();
+    List<StrategicObjective> strategicObjectives = new();
+
+    DetailedSO strategicObjectiveDetail = new();
+    List<DetailedSO> strategicObjectiveDetails = new();
+
+    ProgramSchedule programSchedule = new();
+    List<ProgramSchedule> programSchedules = new();
+
+    StrategicPlanReponse strategicPlanResponse = new();
+    List<StrategicPlanReponse> strategicPlanResponses = new();
+
+    Pillar pillar = new();
+    List<Pillar> pillars = new();
+
+    private async Task GetDepartments() => departments = await strategyService.GetDepartmentAsync(UserId);
+    private async Task GetEmployees() => employees = await strategyService.GetEmployeeAsync(UserId);
+    private async Task GetApplicationRoles() => approles = await accountService.GetRolesAsync(UserId);
+    private async Task GetApplicationUsers() => getusers = await accountService.GetUsersAsync(UserId);
+    private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
+    private async Task GetStrategicObjectives() => strategicObjectives = await strategyService.GetStrategicObjectivesAsync(UserId);
+    private async Task GetDetailedStrategicObjectives() => strategicObjectiveDetails = await strategyService.GetDetailedStrategicObjectivesAsync(UserId);
+    private async Task GetProgramSchedules() => programSchedules = await strategyService.GetProgramScheduleAsync(UserId);
+    private async Task GetStrategicPlans() => strategicPlanResponses = await strategyService.GetStrategicPlanAsync(UserId);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetDepartments();
+            await GetEmployees();
+            await GetApplicationRoles();
+            await GetApplicationUsers();
+            await GetStrategicObjectives();
+            await GetDetailedStrategicObjectives();
+            await GetProgramSchedules();
+            await GetStrategicPlans();
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+}

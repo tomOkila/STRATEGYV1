@@ -48,7 +48,7 @@
         </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
-<ScriptPage></ScriptPage>
+@* <ScriptPage></ScriptPage> *@
 
 @code {
     private string SessionName = string.Empty;
@@ -63,11 +63,8 @@
     IList<Department> selectedDepartment;
 
 
-    private IEnumerable<Department>? AvailableDepartment { get; set; }
-    private async Task GetDepartments()
-    {
-        departments = await strategyService.GetDepartmentAsync(UserId);
-    }
+    private async Task GetDepartments() => departments = await strategyService.GetDepartmentAsync(UserId);
+
 
 
     protected override async Task OnInitializedAsync()

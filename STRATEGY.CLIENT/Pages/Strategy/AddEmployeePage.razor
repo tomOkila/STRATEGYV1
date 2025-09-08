@@ -1,0 +1,188 @@
+﻿@page "/amendemployee"
+<PageTitle>STRATEGY | Manage Employee</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Manage Employee</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/manageemployees" Text="Home" />
+                <RadzenBreadCrumbItem Text="Manage Employee" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+<div class="card card-primary">
+    <div class="card-header text-white" Style="background-color: #EC37FC;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+       @*  <h3 class="card-title"><i class="fas fa-user-plus"></i> Add Employee</h3> *@
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <RadzenStack>
+            <RadzenTemplateForm Name="EmployeeDialog" TItem="Employee" Data=employee Submit="Save" InvalidSubmit="OnInvalidSubmit">
+                <RadzenStack>
+                    <!--Normal Input Field-->
+                    <RadzenFormField Text="Employee Name" Variant="Variant.Outlined">
+                        <ChildContent>
+                            <RadzenTextBox Name="EmployeeName" @bind-Value=employee.EmployeeName />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="EmployeeName" Text="Employee Name is required." />
+                        </Helper>
+                    </RadzenFormField>
+                    <RadzenFormField Text="Email" Variant="Variant.Outlined">
+                        <ChildContent>
+                            <RadzenTextBox Name="EmailAddress" @bind-Value=employee.EmailAddress />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="EmailAddress" Text="Email Address is required." />
+                            <RadzenEmailValidator Component="EmailAddress" Text="Email Address is required." />
+                        </Helper>
+                    </RadzenFormField>
+                    <RadzenFormField Text="ID Number" Variant="Variant.Outlined">
+                        <ChildContent>
+                            <RadzenTextBox Name="IDNumber" @bind-Value=employee.IDNumber />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="IDNumber" Text="ID Number is required." />
+                        </Helper>
+                    </RadzenFormField>
+
+                    <RadzenFormField Text="Registration Date" Variant="Variant.Outlined">
+                        <ChildContent>
+                            <RadzenDatePicker @bind-Value=employee.RegistrationDate Name="RegistrationDate" AllowClear="true" ShowButton="false" />
+                        </ChildContent>
+                        <Helper>
+                            <RadzenRequiredValidator Component="RegistrationDate" Text="Registration Date is required." />
+                        </Helper>
+                    </RadzenFormField>
+
+                    <!--Dropdown Input Field-->
+                    <RadzenDropDown Data=@departments
+                                    @bind-Value=employee.DepartmentID
+                                    TextProperty="DepartmentName"
+                                    AllowFiltering="true"
+                                    FilterAsYouType="true"
+                                    FilterPlaceholder="Select Department"
+                                    Placeholder="Select Department"
+                                    ValueProperty="DepartmentId"
+                                    Name="DepartmentName">
+                    </RadzenDropDown>
+                    <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DepartmentName" Text="Department is required." />
+
+
+                    <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+                </RadzenStack>
+            </RadzenTemplateForm>
+        </RadzenStack>
+    </div>
+    <!-- /.card-body -->
+    <div class="card-footer">
+    </div>
+</div>
+<!-- /.card -->
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private string SessionRoleName = string.Empty;
+    private string PermissionData = string.Empty;
+    List<int> TagIds = new List<int>();
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+    Employee employee = new();
+    List<Employee> employees = new();
+
+    Department department = new();
+    List<Department> departments = new();
+
+
+    private async Task GetDepartments() => departments = await strategyService.GetDepartmentAsync(UserId);
+    private async Task GetEmployees() => employees = await strategyService.GetEmployeeAsync(UserId);
+ 
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            SessionRoleName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.StreetAddress).Value;
+            PermissionData = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value;
+
+            //list the user permissions as below
+            TagIds = PermissionData.Split(',').Select(int.Parse).ToList();
+
+            //load system roles
+            await GetEmployees();
+            await GetDepartments();
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+
+        base.OnInitialized();
+        employee = myStateContainer.EmployeeValue;
+
+    }
+
+    async Task Save()
+    {
+        //pass userId for each request
+        employee.UpdatedBy = UserId;
+
+        try
+        {
+            if (string.IsNullOrEmpty(employee.EmployeeName) || string.IsNullOrEmpty(employee.EmailAddress) || employee.DepartmentID == 0)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all employee details before proceeding.", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+            var response = new GeneralResponse(false, null!);
+            if (employee.EmployeeId > 0)
+                response = await strategyService.UpdateEmployeeAsync(employee);
+            else
+                response = await strategyService.CreateEmployeeAsync(employee);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetEmployees();
+                Navmanager.NavigateTo("manageemployees");
+                //department = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

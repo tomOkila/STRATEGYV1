@@ -5,7 +5,7 @@
         <h4 class="font-weight-bold text-dark">Manage Plan</h4>
         <div style="float:right;">
             <RadzenBreadCrumb>
-                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Path="/manageplandetails" Text="Home" />
                 <RadzenBreadCrumbItem Text="Manage Plan" />
             </RadzenBreadCrumb>
         </div>
@@ -14,7 +14,7 @@
 </div>
 <div class="card card-primary">
     <div class="card-header text-white" Style="background-color: #EC37FC;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
-        <h3 class="card-title"><i class="fas fa-user-plus"></i> Create Strategic Plan</h3>
+        @* <h3 class="card-title"><i class="fas fa-user-plus"></i> Create Strategic Plan</h3> *@
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -133,6 +133,9 @@
     List<StrategicPlan> strategicPlans = new();
     IList<StrategicPlan> selectedStrategicPlans;
 
+    StrategicPlanReponse strategicPlanResponse = new();
+    List<StrategicPlanReponse> strategicPlanResponses = new();
+
     Pillar pillar = new();
     List<Pillar> pillars = new();
 
@@ -145,7 +148,7 @@
     ProgramSchedule programSchedule = new();
     List<ProgramSchedule> programSchedules = new();
 
-    private async Task GetStrategicPlans() => strategicPlans = await strategyService.GetStrategicPlanAsync(UserId);
+    private async Task GetStrategicPlans() => strategicPlanResponses = await strategyService.GetStrategicPlanAsync(UserId);
     private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
     private async Task GetStrategicObjectives() => strategicObjectives = await strategyService.GetStrategicObjectivesAsync(UserId);
     private async Task GetDetailedStrategicObjectives() => detailedSOs = await strategyService.GetDetailedStrategicObjectivesAsync(UserId);
@@ -176,12 +179,17 @@
             SessionEmail = null!;
         }
 
+
+        base.OnInitialized();
+        strategicPlan = myStateContainer.StrategicPlanValue;
+
     }
 
 
     async Task Save()
     {
-        strategicPlan.UpdatedBy = UserId;
+
+
         try
         {
             if (string.IsNullOrEmpty(strategicPlan.StrategicPlanName))
@@ -208,6 +216,7 @@
                 ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
                 await GetStrategicPlans();
                 strategicPlan = new();
+                Navmanager.NavigateTo("manageplandetails");
             }
         }
         catch (Exception ex)

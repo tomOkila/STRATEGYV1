@@ -838,7 +838,7 @@ namespace STRATEGY.CLIENT.Services
             }
         }
 
-        public async Task<List<StrategicPlan>> GetStrategicPlanAsync(int SessionUserId)
+        public async Task<List<StrategicPlanReponse>> GetStrategicPlanAsync(int SessionUserId)
         {
             try
             {
@@ -852,7 +852,7 @@ namespace STRATEGY.CLIENT.Services
                     if (!string.IsNullOrEmpty(error))
                         throw new Exception(error);
 
-                    var result = await response.Content.ReadFromJsonAsync<List<StrategicPlan>>();
+                    var result = await response.Content.ReadFromJsonAsync<List<StrategicPlanReponse>>();
                     return result!;
                 }
                 else

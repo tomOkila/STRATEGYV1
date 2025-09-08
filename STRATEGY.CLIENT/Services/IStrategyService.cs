@@ -38,7 +38,7 @@ namespace STRATEGY.CLIENT.Services
         Task<GeneralResponse> DeleteProgramScheduleAsync(ProgramSchedule model);
 
         Task<GeneralResponse> CreateStrategicPlanAsync(StrategicPlan model);
-        Task<List<StrategicPlan>> GetStrategicPlanAsync(int SessionUserId);
+        Task<List<StrategicPlanReponse>> GetStrategicPlanAsync(int SessionUserId);
         Task<GeneralResponse> UpdateStrategicPlanAsync(StrategicPlan model);
         Task<GeneralResponse> DeleteStrategicPlanAsync(StrategicPlan model);
     }

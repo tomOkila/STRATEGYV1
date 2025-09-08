@@ -175,7 +175,7 @@ namespace STRATEGY.WEBAPI.Controllers
         }
 
         [HttpGet("strategicPlanlist")]
-        public async Task<ActionResult<List<StrategicPlan>>> GetStrategicPlanAsync()
+        public async Task<ActionResult<List<StrategicPlanReponse>>> GetStrategicPlanAsync()
 => Ok(await strategy.GetStrategicPlanAsync());
 
         [HttpPut("updateStrategicPlan")]

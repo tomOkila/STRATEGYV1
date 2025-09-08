@@ -17,6 +17,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStrategyService, StrategyService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<HttpClientValidator>();
+builder.Services.AddSingleton<MyStateContainer>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
