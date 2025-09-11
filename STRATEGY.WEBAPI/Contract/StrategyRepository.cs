@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using STRATEGY.CLIENT.DTOs;
 using STRATEGY.CLIENT.Models;
 using STRATEGY.WEBAPI.Data;
@@ -131,6 +132,79 @@ namespace STRATEGY.WEBAPI.Contract
         }
 
 
+        public async  Task<GeneralResponse> CreatePlanAsync(EditPlan model)
+        {
+            //check if pillar exists
+            var respPillar = await FindPillarByIDAsync(model.PillarID);
+            if (respPillar == null)
+            {
+                return new GeneralResponse(false, "Pillar doesn't exist");
+            }
+
+            //check if department exists
+            var respDept = await FindDepartmentByIDAsync(model.DepartmentID);
+            if (respDept == null)
+            {
+                return new GeneralResponse(false, "Department doesn't exist");
+            }
+
+            //check if strategic objective exists
+            var respSO = await FindStrategicObjectiveByIDAsync(model.SOId);
+            if (respSO == null)
+            {
+                return new GeneralResponse(false, "Strategic Objective doesn't exist");
+            }
+
+            //check if program schedule exists
+            var respSODetail = await FindDetailedStrategicObjectiveByIDAsync(model.DetailedId);
+            if (respSODetail == null)
+            {
+                return new GeneralResponse(false, "Detailed Strategic Objective doesn't exist");
+            }
+
+            //check if program schedule exists
+            var respProgram = await FindDetailedPorgramScheduleByIDAsync(model.ProgramScheduleId);
+            if (respProgram == null)
+            {
+                return new GeneralResponse(false, "Program schedule doesn't exist");
+            }
+
+
+            var response = await FindPlanByIDAsync(model.UserName);
+            if (response != null)
+            {
+                return new GeneralResponse(false, "Plan username already exists");
+            }
+
+
+            if (!string.IsNullOrEmpty(model.Witness))
+            {
+                var link = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH");
+                Byte[] bytes = Convert.FromBase64String(model.Witness);
+                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName, bytes);
+                //assign photo details
+                model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
+            }
+
+
+            _appDbContext.Plans.Add(new Plan()
+            {
+                UserName = model.UserName,
+                DepartmentID = model.DepartmentID,
+                PillarID = model.PillarID,
+                SOId = model.SOId,
+                DetailedId = model.DetailedId,
+                ProgramScheduleId = model.ProgramScheduleId,
+                Witness = model.Witness,
+                CreateDate = DateTime.Now
+            });
+            await _appDbContext.SaveChangesAsync();
+            return new GeneralResponse(true, "Plan Added Successfully");
+
+        }
+
+
+
         public async Task<GeneralResponse> CreateDetailedStrategicObjectivesAsync(DetailedSO model)
         {
             //check if strategic objective exists
@@ -257,6 +331,16 @@ namespace STRATEGY.WEBAPI.Contract
             return new GeneralResponse(true, "Strategic plan Deleted Successfully");  
         }
 
+        public async  Task<GeneralResponse> DeletePlanAsync(Plan model)
+        {
+            var respDetail = await _appDbContext.StrategicPlans.FindAsync(model.PlanID);
+            if (respDetail == null)
+                return new GeneralResponse(false, "Plan not found");
+            _appDbContext.StrategicPlans.Remove(respDetail);
+            await _appDbContext.SaveChangesAsync();
+            return new GeneralResponse(true, "Plan Deleted Successfully");
+        }
+
         public async Task<List<Department>> GetDepartmentAsync() =>
 await _appDbContext.Departments.ToListAsync();
 
@@ -316,6 +400,41 @@ await _appDbContext.Pillars.ToListAsync();
 
             return response1.ToList();
         }
+
+
+        public async Task<List<PlanResponse>> GetPlanAsync()
+        {
+            var result = (from a in _appDbContext.Plans
+                          join c in _appDbContext.Pillars on a.PillarID equals c.PillarID
+                          join d in _appDbContext.StrategicObjectives on a.SOId equals d.SOId
+                          join e in _appDbContext.DetailedSO on a.DetailedId equals e.DetailedId
+                          join f in _appDbContext.ProgramSchedules on a.ProgramScheduleId equals f.ProgramScheduleId
+                          join g in _appDbContext.Departments on a.DepartmentID equals g.DepartmentId
+                          select new { Plans = a, Pillars = c, StrategicObjectives = d, DetailedSO = e, ProgramSchedules = f,Departments=g });
+
+            List<PlanResponse> response1 = new List<PlanResponse>();
+            foreach (var user in result)
+            {
+                PlanResponse response = new PlanResponse();
+                response.PlanID = user.Plans.PlanID;
+                response.UserName = user.Plans.UserName;
+                response.DepartmentID = user.Departments.DepartmentId;
+                response.DepartmentName = user.Departments.DepartmentName;
+                response.PillarName = user.Pillars.PillarName;
+                response.PillarID = user.Pillars.PillarID;
+                response.PillarName = user.Pillars.PillarName;
+                response.SOId = user.StrategicObjectives.SOId;
+                response.TargetName = user.StrategicObjectives.TargetName;
+                response.DetailedId = user.DetailedSO.DetailedId;
+                response.DetailedTargetName = user.DetailedSO.DetailedTargetName;
+                response.ProgramScheduleId = user.ProgramSchedules.ProgramScheduleId;
+                response.ProgramRegistrarName = user.ProgramSchedules.ProgramRegistrarName;
+                response1.Add(response);
+            }
+
+            return response1.ToList();
+        }
+
 
 
         public async Task<GeneralResponse> UpdateDepartmentAsync(Department model)
@@ -483,8 +602,80 @@ await _appDbContext.Pillars.ToListAsync();
             }
         }
 
+        public async Task<GeneralResponse> UpdatePlanAsync(EditPlan model)
+        {
+            //check if pillar exists
+            var respPillar = await FindPillarByIDAsync(model.PillarID);
+            if (respPillar == null)
+            {
+                return new GeneralResponse(false, "Pillar doesn't exist");
+            }
+
+            //check if department exists
+            var respDept = await FindDepartmentByIDAsync(model.DepartmentID);
+            if (respDept == null)
+            {
+                return new GeneralResponse(false, "Department doesn't exist");
+            }
+
+            //check if strategic objective exists
+            var respSO = await FindStrategicObjectiveByIDAsync(model.SOId);
+            if (respSO == null)
+            {
+                return new GeneralResponse(false, "Strategic Objective doesn't exist");
+            }
+
+            //check if program schedule exists
+            var respSODetail = await FindDetailedStrategicObjectiveByIDAsync(model.DetailedId);
+            if (respSODetail == null)
+            {
+                return new GeneralResponse(false, "Detailed Strategic Objective doesn't exist");
+            }
+
+            //check if program schedule exists
+            var respProgram = await FindDetailedPorgramScheduleByIDAsync(model.DetailedId);
+            if (respProgram == null)
+            {
+                return new GeneralResponse(false, "Program schedule doesn't exist");
+            }
+
+            if (!string.IsNullOrEmpty(model.Witness))
+            {
+                Byte[] bytes = Convert.FromBase64String(model.Witness);
+                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName, bytes);
+                //assign photo details
+                model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
+            }
+
+
+            var strategicPlanResp = await _appDbContext.Plans.FindAsync(model.PlanID);
+            if (strategicPlanResp == null)
+            {
+                return new GeneralResponse(false, "Plan doesn't exist");
+            }
+            else
+            {
+                strategicPlanResp.PlanID = model.PlanID;
+                strategicPlanResp.UserName = model.UserName;
+                strategicPlanResp.DepartmentID = model.DepartmentID;
+                strategicPlanResp.PillarID = model.PillarID;
+                strategicPlanResp.SOId = model.SOId;
+                strategicPlanResp.DetailedId = model.DetailedId;
+                strategicPlanResp.Witness = model.Witness;
+                strategicPlanResp.UpdatedBy = model.UpdatedBy;
+                strategicPlanResp.CreateDate = strategicPlanResp.CreateDate;
+                strategicPlanResp.UpdatedDate = DateTime.Now;
+                await _appDbContext.SaveChangesAsync();
+                return new GeneralResponse(true, "Plan Updated Successfully");
+            }
+        }
+
         private async Task<Department> FindDepartmentByNameAsync(string departmentName)
  => await _appDbContext.Departments.FirstOrDefaultAsync(u => u.DepartmentName == departmentName);
+
+        private async Task<Department> FindDepartmentByIDAsync(int departmentID)
+=> await _appDbContext.Departments.FirstOrDefaultAsync(u => u.DepartmentId == departmentID);
+
         private async Task<Pillar> FindPillarByNameAsync(string pillarName)
 => await _appDbContext.Pillars.FirstOrDefaultAsync(u => u.PillarName == pillarName);
 
@@ -513,6 +704,10 @@ await _appDbContext.Pillars.ToListAsync();
 
         private async Task<StrategicPlan> FindStrategicPlanByIDAsync(string strategicPlanName)
 => await _appDbContext.StrategicPlans.FirstOrDefaultAsync(u => u.StrategicPlanName == strategicPlanName);
+
+        private async Task<Plan> FindPlanByIDAsync(string userName)
+=> await _appDbContext.Plans.FirstOrDefaultAsync(u => u.UserName == userName);
+
 
      
     }

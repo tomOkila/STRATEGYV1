@@ -191,5 +191,32 @@ namespace STRATEGY.WEBAPI.Controllers
             var result = await strategy.DeleteStrategicPlanAsync(model);
             return Ok(result);
         }
+
+
+
+        [HttpPost("createPlan")]
+        public async Task<ActionResult<EditPlan>> CreatePlanAsync(EditPlan model)
+        {
+            var result = await strategy.CreatePlanAsync(model);
+            return Ok(result);
+        }
+
+        [HttpGet("planlist")]
+        public async Task<ActionResult<List<Plan>>> GetPlanAsync()
+=> Ok(await strategy.GetPlanAsync());
+
+        [HttpPut("updatePlan")]
+        public async Task<IActionResult> UpdatePlanAsync([FromBody] EditPlan model)
+        {
+            var result = await strategy.UpdatePlanAsync(model);
+            return Ok(result);
+        }
+
+        [HttpPost("deletePlan")]
+        public async Task<IActionResult> DeletePlanAsync(Plan model)
+        {
+            var result = await strategy.DeletePlanAsync(model);
+            return Ok(result);
+        }
     }
 }

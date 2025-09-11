@@ -933,5 +933,133 @@ namespace STRATEGY.CLIENT.Services
                 throw new Exception($"Error: {ex.Message}");
             }
         }
+
+        public async Task<GeneralResponse> CreatePlanAsync(EditPlan model)
+        {
+            try
+            {
+                var privateClient = await validateHttpClient.GetSecuredHttpClient();
+                var response = await privateClient.PostAsJsonAsync("api/Strategy/createPlan", model);
+                //chcek if the token has expired
+                bool checkResponseIfUnAuthorized = CheckResponse(response);
+                if (!checkResponseIfUnAuthorized)
+                {
+                    string error = CheckResponseStatus(response);
+                    if (!string.IsNullOrEmpty(error))
+                        throw new Exception(error);
+
+                    var result = await response.Content.ReadFromJsonAsync<GeneralResponse>();
+                    return result!;
+                }
+                else
+                {
+                    if (!await RequestAndSetNewToken(model.UpdatedBy))
+                        return null!;
+                    else
+                        return await CreatePlanAsync(model);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<List<PlanResponse>> GetPlanAsync(int SessionUserId)
+        {
+            try
+            {
+                var privateClient = await validateHttpClient.GetSecuredHttpClient();
+                var response = await privateClient.GetAsync("api/Strategy/planlist");
+                //chcek if the token has expired
+                bool checkResponseIfUnAuthorized = CheckResponse(response);
+                if (!checkResponseIfUnAuthorized)
+                {
+                    string error = CheckResponseStatus(response);
+                    if (!string.IsNullOrEmpty(error))
+                        throw new Exception(error);
+
+                    var result = await response.Content.ReadFromJsonAsync<List<PlanResponse>>();
+                    return result!;
+                }
+                else
+                {
+                    if (!await RequestAndSetNewToken(SessionUserId))
+                        return null!;
+                    else
+                        return await GetPlanAsync(SessionUserId);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<GeneralResponse> UpdatePlanAsync(EditPlan model)
+        {
+            try
+            {
+                var privateClient = await validateHttpClient.GetSecuredHttpClient();
+                var response = await privateClient.PutAsJsonAsync("api/Strategy/updateStrategicPlan", model);
+                //chcek if the token has expired
+                bool checkResponseIfUnAuthorized = CheckResponse(response);
+                if (!checkResponseIfUnAuthorized)
+                {
+                    string error = CheckResponseStatus(response);
+                    if (!string.IsNullOrEmpty(error))
+                        throw new Exception(error);
+
+                    var result = await response.Content.ReadFromJsonAsync<GeneralResponse>();
+                    return result!;
+                }
+                else
+                {
+                    if (!await RequestAndSetNewToken(model.UpdatedBy))
+                        return null!;
+                    else
+                        return await UpdatePlanAsync(model);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<GeneralResponse> DeletePlanAsync(Plan model)
+        {
+            try
+            {
+                var privateClient = await validateHttpClient.GetSecuredHttpClient();
+                var response = await privateClient.PostAsJsonAsync($"api/Strategy/deletePlan", model);
+                //chcek if the token has expired
+                bool checkResponseIfUnAuthorized = CheckResponse(response);
+                if (!checkResponseIfUnAuthorized)
+                {
+                    string error = CheckResponseStatus(response);
+                    if (!string.IsNullOrEmpty(error))
+                        throw new Exception(error);
+
+                    var result = await response.Content.ReadFromJsonAsync<GeneralResponse>();
+                    return result!;
+                }
+                else
+                {
+                    if (!await RequestAndSetNewToken(model.UpdatedBy))
+                        return null!;
+                    else
+                        return await DeletePlanAsync(model);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
     }
 }

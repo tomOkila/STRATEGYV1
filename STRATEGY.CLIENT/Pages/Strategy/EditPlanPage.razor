@@ -1,0 +1,327 @@
+﻿@page "/editplan"
+<PageTitle>STRATEGY | Edit Plan</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Edit Plan</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/theplan" Text="Home" />
+                <RadzenBreadCrumbItem Text="Edit Plan" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+<div class="card card-primary">
+    <div class="card-header text-white" Style="background-color: #EC37FC;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+        @* <h3 class="card-title"><i class="fas fa-user-plus"></i> Create Strategic Plan</h3> *@
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <RadzenStack>
+            <RadzenTemplateForm TItem="EditPlan" Data=editPlan Submit="Save" InvalidSubmit="OnInvalidSubmit">
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="User Name: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="UserName" @bind-Value=editPlan.UserName />
+                            <RadzenRequiredValidator Component="UserName" Text="User Name is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack>
+                            <RadzenStack Gap="0.1rem">
+                                <RadzenLabel Text="Pillar: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
+                                <!--Dropdown Input Field-->
+                                <RadzenDropDown Data=@pillars
+                                                @bind-Value=editPlan.PillarID
+                                                TextProperty="PillarName"
+                                                AllowFiltering="true"
+                                                FilterAsYouType="true"
+                                                FilterPlaceholder="Select Pillar Name"
+                                                Placeholder="Select Pillar Name"
+                                                ValueProperty="PillarID"
+                                                Name="PillarName"
+                                                Style="font-weight:bold">
+                                </RadzenDropDown>
+                                <RadzenRequiredValidator DefaultValue=0 Component="PillarName" Text="Pillar Name is required." />
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack>
+                            <RadzenStack Gap="0.1rem">
+                                <RadzenLabel Text="Department: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
+                                <!--Dropdown Input Field-->
+                                <RadzenDropDown Data=@departments
+                                                @bind-Value=editPlan.DepartmentID
+                                                TextProperty="DepartmentName"
+                                                AllowFiltering="true"
+                                                FilterAsYouType="true"
+                                                FilterPlaceholder="Select Department Name"
+                                                Placeholder="Select Department Name"
+                                                ValueProperty="DepartmentId"
+                                                Name="DepartmentName"
+                                                Style="font-weight:bold">
+                                </RadzenDropDown>
+                                <RadzenRequiredValidator DefaultValue=0 Component="DepartmentName" Text="Department Name is required." />
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Strategic Objectives: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
+                            <!--Dropdown Input Field-->
+                            <RadzenDropDown Data=@strategicObjectives.Where(x=>x.PillarId==editPlan.PillarID)
+                                            @bind-Value=editPlan.SOId
+                                            TextProperty="TargetName"
+                                            AllowFiltering="true"
+                                            FilterAsYouType="true"
+                                            FilterPlaceholder="Select Strategic Objectives"
+                                            Placeholder="Select Strategic Objectives"
+                                            ValueProperty="SOId"
+                                            Name="TargetName"
+                                            Style="font-weight:bold">
+                            </RadzenDropDown>
+                            <RadzenRequiredValidator DefaultValue=0 Component="TargetName" Text="Target Name is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack>
+                            <RadzenStack Gap="0.1rem">
+                                <RadzenLabel Text="Detailed Strategic Objectives: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
+                                <!--Dropdown Input Field-->
+                                <RadzenDropDown Data=@detailedSOs.Where(x=>x.SOId==editPlan.SOId)
+                                                @bind-Value=editPlan.DetailedId
+                                                TextProperty="DetailedTargetName"
+                                                AllowFiltering="true"
+                                                FilterAsYouType="true"
+                                                FilterPlaceholder="Select Detailed Target Name"
+                                                Placeholder="Select Detailed Target Name"
+                                                ValueProperty="DetailedId"
+                                                Name="DetailedTargetName"
+                                                Style="font-weight:bold">
+                                </RadzenDropDown>
+                                <RadzenRequiredValidator DefaultValue=0 Component="DetailedTargetName" Text="Detailed TargetName is required." />
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                </RadzenRow>
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Program Schedule: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
+                            <!--Dropdown Input Field-->
+                            <RadzenDropDown Data=@programSchedules.Where(x=>x.DetailedId==editPlan.DetailedId)
+                                            @bind-Value=editPlan.ProgramScheduleId
+                                            TextProperty="ProgramRegistrarName"
+                                            AllowFiltering="true"
+                                            FilterAsYouType="true"
+                                            FilterPlaceholder="Select Program Schedule"
+                                            Placeholder="Select Program Schedule"
+                                            ValueProperty="ProgramScheduleId"
+                                            Name="ProgramRegistrarName"
+                                            Style="font-weight:bold">
+                            </RadzenDropDown>
+                            <RadzenRequiredValidator DefaultValue=0 Component="ProgramRegistrarName" Text="Program Schedule is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenStack Gap="1rem">
+                        <RadzenColumn Size="6" SizeSM="6">
+                            <RadzenCard Variant="Variant.Outlined">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Drag and drop files to upload</RadzenText>
+                                <InputFile OnChange="@SingleUpload4" style="margin-bottom:15px;" />
+                                <RadzenImage Path=@editPlan.Witness Style="width: 15rem;" AlternateText="" />
+                            </RadzenCard>
+                        </RadzenColumn>
+                    </RadzenStack>
+                </RadzenRow>
+
+
+                <RadzenButton Style="margin-top:20px;" Icon="save" ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenTemplateForm>
+        </RadzenStack>
+    </div>
+    <!-- /.card-body -->
+    <div class="card-footer">
+    </div>
+</div>
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    Plan plan = new();
+    List<Plan> plans = new();
+    IList<Plan> selectedPlans;
+
+    EditPlan editPlan = new();
+    List<EditPlan> editPlans = new();
+
+
+    PlanResponse planResponse = new();
+    List<PlanResponse> planResponses = new();
+
+    Pillar pillar = new();
+    List<Pillar> pillars = new();
+
+    StrategicObjective strategicObjective = new();
+    List<StrategicObjective> strategicObjectives = new();
+
+    DetailedSO detailedSO = new();
+    List<DetailedSO> detailedSOs = new();
+
+    ProgramSchedule programSchedule = new();
+    List<ProgramSchedule> programSchedules = new();
+
+    Department department = new();
+    List<Department> departments = new();
+
+    private async Task GetPlans() => planResponses = await strategyService.GetPlanAsync(UserId);
+    private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
+    private async Task GetStrategicObjectives() => strategicObjectives = await strategyService.GetStrategicObjectivesAsync(UserId);
+    private async Task GetDetailedStrategicObjectives() => detailedSOs = await strategyService.GetDetailedStrategicObjectivesAsync(UserId);
+    private async Task GetProgramSchedule() => programSchedules = await strategyService.GetProgramScheduleAsync(UserId);
+    private async Task GetDepartments() => departments = await strategyService.GetDepartmentAsync(UserId);
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetPlans();
+            await GetPillars();
+            await GetStrategicObjectives();
+            await GetDetailedStrategicObjectives();
+            await GetProgramSchedule();
+            await GetDepartments();
+
+            selectedPlans = new List<Plan>() { selectedPlans.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+
+        base.OnInitialized();
+        plan = myStateContainer.PlanValue;
+        if (plan.PlanID>0)
+        {
+            EditPlan editPlan = new EditPlan();
+            editPlan.PlanID = plan.PlanID;
+            editPlan.UserName = plan.UserName;
+            editPlan.DepartmentID = plan.DepartmentID;
+            editPlan.PillarID = plan.PillarID;
+            editPlan.SOId = plan.SOId;
+            editPlan.DetailedId = plan.DetailedId;
+            editPlan.ProgramScheduleId = plan.ProgramScheduleId;
+            editPlan.Witness = plan.Witness;
+        }
+
+    }
+
+
+    private async Task SingleUpload4(InputFileChangeEventArgs e)
+    {
+        string base64String = "";
+        try
+        {
+            await using MemoryStream fs = new MemoryStream();
+            await e.File.OpenReadStream(maxAllowedSize: 5048576).CopyToAsync(fs);
+            byte[] somBytes = GetBytes(fs);
+            base64String = Convert.ToBase64String(somBytes, 0, somBytes.Length);
+            editPlan.Witness = base64String;
+            editPlan.WitnessName = e.File.Name;
+
+            System.Diagnostics.Debug.Print("Imatge 64: " + base64String + Environment.NewLine);
+        }
+
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.Print("ERROR: " + ex.Message + Environment.NewLine);
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+        }
+    }
+
+    public static byte[] GetBytes(Stream stream)
+    {
+        var bytes = new byte[stream.Length];
+        stream.Seek(0, SeekOrigin.Begin);
+        stream.ReadAsync(bytes, 0, bytes.Length);
+        stream.Dispose();
+        return bytes;
+    }
+
+
+
+    async Task Save()
+    {
+      
+        try
+        {
+            if (string.IsNullOrEmpty(editPlan.UserName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all plan details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (editPlan.PlanID > 0)
+                response = await strategyService.UpdatePlanAsync(editPlan);
+            else
+                response = await strategyService.CreatePlanAsync(editPlan);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                await GetPlans();
+                plan = new();
+                Navmanager.NavigateTo("theplan");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+
+}

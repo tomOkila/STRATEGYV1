@@ -1,0 +1,214 @@
+﻿@page "/theplan"
+<PageTitle>STRATEGY | The Plan</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Plan</h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="The Plan" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+
+</div>
+<RadzenButton Text="Create Plan" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+<RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
+                AllowAlternatingRows="false"
+                AllowSorting="true"
+                AllowMultiColumnSorting="true"
+                PageSize="5"
+                AllowPaging="true"
+                ShowPagingSummary="true"
+                SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value=@selectedPlanResponse
+                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                Data="@planResponses"
+                EmptyText="No  plan to display at the moment"
+                TItem="PlanResponse" Style="margin:5px;">
+    <Columns>
+        <RadzenDataGridColumn TItem="PlanResponse" Property="PlanID" Title="ID" Frozen="true" Width="20px" Visible="true" />
+        <RadzenDataGridColumn TItem="PlanResponse" Property="UserName" Title="User Name" Width="60px" />
+        <RadzenDataGridColumn TItem="PlanResponse" Property="PillarName" Title="Pillar Name" Width="60px" />
+        <RadzenDataGridColumn Context="strategicPlanResponses"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="60px"
+                              TextAlign="Radzen.TextAlign.Center"
+                              Frozen="true"
+                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                              Title="Actions">
+            <Template Context="planResponses">
+                <RadzenButton Icon="visibility" ButtonStyle="Radzen.ButtonStyle.Info" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewClicked(planResponses))">
+                </RadzenButton>
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(planResponses))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>DeleteConfirmClicked(planResponses))">
+                </RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+
+    PlanResponse planResponse = new();
+    List<PlanResponse> planResponses = new();
+    IList<PlanResponse> selectedPlanResponse;
+
+    private async Task GetPlanResponse() => planResponses = await strategyService.GetPlanAsync(UserId);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            //load system roles
+            await GetPlanResponse();
+            selectedPlanResponse = new List<PlanResponse>() { selectedPlanResponse.FirstOrDefault() };
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+    }
+
+
+    private void CreateClicked()
+    {
+        Plan plan = new Plan();
+        plan = new();
+        myStateContainer.SetPlan(plan);
+        Navmanager.NavigateTo("editplan");
+    }
+
+    private void EditClicked(PlanResponse inconPlanReponse)
+    {
+        planResponse = inconPlanReponse;
+        //ShowInlineDialog();
+        //create strategic plan model
+        Plan strategicPlan1 = new Plan();
+        strategicPlan1.PlanID = planResponse.PlanID;
+        strategicPlan1.DepartmentID = planResponse.DepartmentID;
+        strategicPlan1.UserName = planResponse.UserName;
+        strategicPlan1.PillarID = planResponse.PillarID;
+        strategicPlan1.SOId = planResponse.SOId;
+        strategicPlan1.DetailedId = planResponse.DetailedId;
+        strategicPlan1.ProgramScheduleId = planResponse.ProgramScheduleId;
+        strategicPlan1.Witness = planResponse.Witness;
+
+        myStateContainer.SetPlan(strategicPlan1);
+        Navmanager.NavigateTo("editplan");
+
+    }
+
+    private void DeleteConfirmClicked(PlanResponse inconPlanReponse)
+    {
+        planResponse = inconPlanReponse;
+        ShowInlineDeleteConfirmTaskDialog();
+    }
+
+    async Task ShowInlineDeleteConfirmTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete Plan Request? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+        <p>PlanID: <b>@planResponse.PlanID</b></p>
+        <p>Name: <b>@planResponse.UserName</b></p>
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Delete Request" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args =>DeleteClicked(planResponse))" />
+                <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+            </RadzenStack>
+        </RadzenStack>
+    </RadzenStack>
+        );
+    }
+
+
+    private void ViewClicked(PlanResponse inconPlanReponse)
+    {
+        planResponse = inconPlanReponse;
+        ShowViewInlineDialog();
+    }
+
+    async Task ShowViewInlineDialog()
+    {
+        var result = await DialogService1.OpenAsync("Plan Display", ds =>
+    @<RadzenStack Gap="0.5rem" Style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif, 'Arial Narrow Bold', sans-serif;">
+        <RadzenCard Variant=Variant.Filled Style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;font-size:13px;">
+            <RadzenLabel><b>PlanID: </b> @planResponse.PlanID</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Plan Username: </b> @planResponse.UserName</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Pillar Name: </b> @planResponse.DepartmentName</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Target Name: </b> @planResponse.TargetName</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Detailed Target Name: </b> @planResponse.DetailedTargetName</RadzenLabel>
+            <br />
+            <RadzenLabel><b>Program Registrar Name: </b> @planResponse.ProgramRegistrarName</RadzenLabel>
+        </RadzenCard>
+        <hr />
+
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenStack Orientation="Orientation.Horizontal">
+                <RadzenButton Text="Cancel" Icon="cancel" Click="() => ds.Close(false)" ButtonStyle="ButtonStyle.Secondary" />
+            </RadzenStack>
+
+        </RadzenStack>
+    </RadzenStack>
+    );
+    }
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(PlanResponse inconPlanReponse)
+    {
+
+        Plan strategicPlan1 = new Plan();
+        strategicPlan1.PlanID = planResponse.PlanID;
+        strategicPlan1.UserName = planResponse.UserName;
+        strategicPlan1.DepartmentID = planResponse.DepartmentID;
+        strategicPlan1.PillarID = planResponse.PillarID;
+        strategicPlan1.SOId = planResponse.SOId;
+        strategicPlan1.DetailedId = planResponse.DetailedId;
+        strategicPlan1.ProgramScheduleId = planResponse.ProgramScheduleId;
+        strategicPlan1.UpdatedBy = UserId;
+
+        var response = await strategyService.DeletePlanAsync(strategicPlan1);
+        if (response.Flag)
+        {
+
+            DeleteId = 0;
+            StateHasChanged();
+            DialogService1.Close();
+            await GetPlanResponse();
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+
+        }
+        else
+        {
+            await GetPlanResponse();
+            DialogService1.Close();
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+        }
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

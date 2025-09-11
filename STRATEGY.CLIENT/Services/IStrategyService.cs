@@ -41,5 +41,11 @@ namespace STRATEGY.CLIENT.Services
         Task<List<StrategicPlanReponse>> GetStrategicPlanAsync(int SessionUserId);
         Task<GeneralResponse> UpdateStrategicPlanAsync(StrategicPlan model);
         Task<GeneralResponse> DeleteStrategicPlanAsync(StrategicPlan model);
+
+
+        Task<GeneralResponse> CreatePlanAsync(EditPlan model);
+        Task<List<PlanResponse>> GetPlanAsync(int SessionUserId);
+        Task<GeneralResponse> UpdatePlanAsync(EditPlan model);
+        Task<GeneralResponse> DeletePlanAsync(Plan model);
     }
 }

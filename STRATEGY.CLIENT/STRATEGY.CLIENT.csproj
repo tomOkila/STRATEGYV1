@@ -38,4 +38,8 @@
     <None Include="wwwroot\vendors\.DS_Store" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\PlanImages\" />
+  </ItemGroup>
+
 </Project>

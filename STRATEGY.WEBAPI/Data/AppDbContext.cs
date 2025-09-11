@@ -21,5 +21,6 @@ namespace STRATEGY.WEBAPI.Data
         public DbSet<DetailedSO> DetailedSO { get; set; }
         public DbSet<ProgramSchedule> ProgramSchedules { get; set; }
         public DbSet<StrategicPlan> StrategicPlans { get; set; }
+        public DbSet<Plan> Plans { get; set; }
     }
 }

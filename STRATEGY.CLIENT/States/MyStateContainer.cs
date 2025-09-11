@@ -5,6 +5,7 @@ namespace STRATEGY.CLIENT.States
     public class MyStateContainer
     {
         public StrategicPlan StrategicPlanValue { get; set; }
+        public Plan PlanValue { get; set; }
         public Employee EmployeeValue { get; set; }
 
         public event Action OnStateChange;
@@ -19,6 +20,13 @@ namespace STRATEGY.CLIENT.States
             this.EmployeeValue = EmployeeValue;
             NotifyStateChanged();
         }
+
+        public void SetPlan(Plan PlanValue)
+        {
+            this.PlanValue = PlanValue;
+            NotifyStateChanged();
+        }
+
         private void NotifyStateChanged() => OnStateChange?.Invoke();
     }
 }
