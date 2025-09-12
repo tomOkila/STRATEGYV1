@@ -1003,7 +1003,7 @@ namespace STRATEGY.CLIENT.Services
             try
             {
                 var privateClient = await validateHttpClient.GetSecuredHttpClient();
-                var response = await privateClient.PutAsJsonAsync("api/Strategy/updateStrategicPlan", model);
+                var response = await privateClient.PutAsJsonAsync("api/Strategy/updatePlan", model);
                 //chcek if the token has expired
                 bool checkResponseIfUnAuthorized = CheckResponse(response);
                 if (!checkResponseIfUnAuthorized)

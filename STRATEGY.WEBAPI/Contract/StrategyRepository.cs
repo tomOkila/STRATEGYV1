@@ -177,11 +177,10 @@ namespace STRATEGY.WEBAPI.Contract
             }
 
 
-            if (!string.IsNullOrEmpty(model.Witness))
+            if (!string.IsNullOrEmpty(model.WitnessName))
             {
-                var link = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH");
                 Byte[] bytes = Convert.FromBase64String(model.Witness);
-                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName, bytes);
+                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_PATH") + model.WitnessName, bytes);
                 //assign photo details
                 model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
             }
@@ -418,6 +417,7 @@ await _appDbContext.Pillars.ToListAsync();
                 PlanResponse response = new PlanResponse();
                 response.PlanID = user.Plans.PlanID;
                 response.UserName = user.Plans.UserName;
+                response.Witness = user.Plans.Witness;
                 response.DepartmentID = user.Departments.DepartmentId;
                 response.DepartmentName = user.Departments.DepartmentName;
                 response.PillarName = user.Pillars.PillarName;
@@ -429,6 +429,7 @@ await _appDbContext.Pillars.ToListAsync();
                 response.DetailedTargetName = user.DetailedSO.DetailedTargetName;
                 response.ProgramScheduleId = user.ProgramSchedules.ProgramScheduleId;
                 response.ProgramRegistrarName = user.ProgramSchedules.ProgramRegistrarName;
+             
                 response1.Add(response);
             }
 
@@ -639,10 +640,10 @@ await _appDbContext.Pillars.ToListAsync();
                 return new GeneralResponse(false, "Program schedule doesn't exist");
             }
 
-            if (!string.IsNullOrEmpty(model.Witness))
+            if (!string.IsNullOrEmpty(model.WitnessName))
             {
                 Byte[] bytes = Convert.FromBase64String(model.Witness);
-                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName, bytes);
+                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_PATH") + model.WitnessName, bytes);
                 //assign photo details
                 model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
             }
