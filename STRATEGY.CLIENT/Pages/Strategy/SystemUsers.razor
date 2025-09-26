@@ -71,13 +71,17 @@
     Pillar pillar = new();
     List<Pillar> pillars = new();
 
+    Department department = new();
+    List<Department> departments = new();
+
+
 
     private IEnumerable<AppRoles>? AvailableRoles { get; set; }
     private async Task GetApplicationRoles() => approles = await accountService.GetRolesAsync(UserId);
     private async Task GetApplicationUsers() => getusers = await accountService.GetUsersAsync(UserId);
     private async Task GetApplicationPermissions() => permissions = await accountService.GetPermissionsAsync(UserId);
     private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
-
+    private async Task GetDepartment() => departments = await strategyService.GetDepartmentAsync(UserId);
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,6 +104,8 @@
         await GetApplicationRoles();
         await GetApplicationUsers();
         await GetApplicationPermissions();
+        
+
         selectedAppusers = new List<RegisterUserDTO>() { appusers.FirstOrDefault() };
     }
 
@@ -107,7 +113,9 @@
     private void CreateClicked()
     {
         appuser = new();
-        ShowInlineDialog();
+        //ShowInlineDialog();
+        myStateContainer.SetAppUsers(appuser);
+        Navmanager.NavigateTo("amendsystemusers");
     }
 
     private void EditClicked(GetUserDTO inconRoles1)
@@ -120,9 +128,13 @@
         inconRoles.ConfirmPassword = inconRoles1.ConfirmPassword;
         inconRoles.RoleId = inconRoles1.RoleId;
         inconRoles.PermissionId = inconRoles1.PermissionId;
+        inconRoles.DepartmentId = inconRoles1.DepartmentId;
+
 
         appuser = inconRoles;
-        ShowInlineDialog();
+        myStateContainer.SetAppUsers(appuser);
+        Navmanager.NavigateTo("amendsystemusers");
+        //ShowInlineDialog();
     }
 
     private void ViewDeleteClicked(GetUserDTO inconGetUserDTO)
@@ -303,8 +315,20 @@
                                 AllowClear=true 
                                 Placeholder="Select Permisssion">
                                 </RadzenDropDown>
-                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="PermissionName" Text="Permissionname is required." />
+                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="PermissionName" Text="PermissionName is required." />
 
+                <!--Dropdown Input Field-->
+                <RadzenDropDown Data=@departments
+                                @bind-Value=appuser.DepartmentId
+                                TextProperty="DepartmentName"
+                                AllowFiltering="true"
+                                FilterAsYouType="true"
+                                FilterPlaceholder="Select Department"
+                                Placeholder="Select Department"
+                                ValueProperty="DepartmentId"
+                                Name="DepartmentName">
+                </RadzenDropDown>
+                <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DepartmentName" Text="Department is required." />
 
                 <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
             </RadzenStack>

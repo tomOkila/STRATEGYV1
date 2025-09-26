@@ -24,7 +24,7 @@
                     <RadzenColumn Size="6" SizeSM="6">
                         <RadzenStack Gap="0.1rem">
                             <RadzenLabel Text="User Name: " Style="font-weight:bold;color:black" />
-                            <RadzenTextBox Name="UserName" @bind-Value=editPlan.UserName />
+                            <RadzenTextBox Disabled Name="UserName" @bind-Value=editPlan.UserName />
                             <RadzenRequiredValidator Component="UserName" Text="User Name is required" />
                         </RadzenStack>
                     </RadzenColumn>
@@ -55,8 +55,8 @@
                             <RadzenStack Gap="0.1rem">
                                 <RadzenLabel Text="Department: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
                                 <!--Dropdown Input Field-->
-                                <RadzenDropDown Data=@departments
-                                                @bind-Value=editPlan.DepartmentID
+                                <RadzenDropDown Disabled Data=@departments
+                                                @bind-Value=SessionDepartmentID
                                                 TextProperty="DepartmentName"
                                                 AllowFiltering="true"
                                                 FilterAsYouType="true"
@@ -155,6 +155,7 @@
 @code {
     private string SessionName = string.Empty;
     private string SessionEmail = string.Empty;
+    private int SessionDepartmentID;
     private int UserId;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
@@ -193,6 +194,7 @@
     private async Task GetProgramSchedule() => programSchedules = await strategyService.GetProgramScheduleAsync(UserId);
     private async Task GetDepartments() => departments = await strategyService.GetDepartmentAsync(UserId);
 
+
     protected override async Task OnInitializedAsync()
     {
 
@@ -202,6 +204,7 @@
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            SessionDepartmentID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname).Value);
 
             //load system roles
             await GetPlans();
@@ -211,7 +214,6 @@
             await GetProgramSchedule();
             await GetDepartments();
 
-            selectedPlans = new List<Plan>() { selectedPlans.FirstOrDefault() };
         }
         catch (Exception ex)
         {
@@ -225,13 +227,17 @@
         if (plan.PlanID>0)
         {
             editPlan.PlanID = plan.PlanID;
-            editPlan.UserName = plan.UserName;
+            editPlan.UserName = SessionName!;
             editPlan.DepartmentID = plan.DepartmentID;
             editPlan.PillarID = plan.PillarID;
             editPlan.SOId = plan.SOId;
             editPlan.DetailedId = plan.DetailedId;
             editPlan.ProgramScheduleId = plan.ProgramScheduleId;
             editPlan.Witness = plan.Witness;
+        }
+        else
+        {
+            editPlan.UserName = SessionName!;
         }
 
     }

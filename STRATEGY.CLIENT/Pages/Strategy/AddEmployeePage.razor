@@ -161,7 +161,6 @@
             {
                 DialogService1.Close();
                 ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
-                await GetEmployees();
                 Navmanager.NavigateTo("manageemployees");
                 //department = new();
             }

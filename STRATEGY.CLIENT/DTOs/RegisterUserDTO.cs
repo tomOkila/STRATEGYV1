@@ -16,5 +16,6 @@ namespace STRATEGY.CLIENT.DTOs
         public string ConfirmPassword { get; set; } = string.Empty;
         public int RoleId { get; set; }
         public IList<int> PermissionId { get; set; }
+        public int DepartmentId { get; set; }
     }
 }

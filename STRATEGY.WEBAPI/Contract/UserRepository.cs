@@ -60,8 +60,9 @@ namespace STRATEGY.WEBAPI.Contract
             var result = (from a in _appDbContext.Users
                           join c in _appDbContext.UserRoles on a.UserId equals c.UserId
                           join d in _appDbContext.Roles on c.RoleId equals d.Id
+                          join e in _appDbContext.Departments on a.DepartmentId equals e.DepartmentId
 
-                          select new { Users = a, UserRoles = c, Roles = d });
+                          select new { Users = a, UserRoles = c, Roles = d, Departments = e });
 
             List<GetUserDTO> response1 = new List<GetUserDTO>();
             foreach (var user in result)
@@ -73,6 +74,7 @@ namespace STRATEGY.WEBAPI.Contract
                 response.RoleId = user.UserRoles.RoleId;
                 response.RoleName = user.Roles.RoleName;
                 response.PermissionId = user.UserRoles.PermissionId;
+                response.DepartmentId = user.Departments.DepartmentId;
                 response1.Add(response);
             }
 
@@ -145,6 +147,7 @@ namespace STRATEGY.WEBAPI.Contract
             {
                 Name = model.Name,
                 Email = model.Email,
+                DepartmentId = model.DepartmentId,
                 Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
                 CreateDate = DateTime.Now
             });
@@ -187,6 +190,7 @@ namespace STRATEGY.WEBAPI.Contract
             appuseredit.Name = model.Name;
             appuseredit.Email = model.Email;
             appuseredit.UserId = model.Id;
+            appuseredit.DepartmentId = model.DepartmentId;
             appuseredit.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
             appuseredit.CreateDate = getUser.CreateDate;
             appuseredit.UpdatedDate = DateTime.Now;
@@ -308,9 +312,10 @@ namespace STRATEGY.WEBAPI.Contract
             new Claim(ClaimTypes.Email,user.Email),
             new Claim(ClaimTypes.Role,roleID.ToString().Trim()),
             new Claim(ClaimTypes.StreetAddress,roleName.ToString().Trim()),
+            new Claim(ClaimTypes.Surname,user.DepartmentId.ToString().Trim()),
             new Claim(ClaimTypes.Country,string.Join(",", userPermission).Trim()),
+            };
 
-        };
             var token = new JwtSecurityToken(
                 issuer: _config["JwtSection:Issuer"],
                 audience: _config["JwtSection:Audience"],

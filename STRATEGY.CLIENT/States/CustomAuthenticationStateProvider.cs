@@ -112,9 +112,10 @@ namespace STRATEGY.CLIENT.States
                 var Role = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Role)!.Value;
                 var RoleName = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.StreetAddress)!.Value;
                 var PermissionsData = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Country)!.Value;
+                var DepartmentID = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Surname)!.Value;
                 var fullName = "";
 
-                return new UserClaimsDTO(fullName, name, email, Role, RoleName, PermissionsData, UserID);
+                return new UserClaimsDTO(fullName, name, email, Role, RoleName, PermissionsData, DepartmentID, UserID);
             }
             catch (Exception)
             {
@@ -133,7 +134,8 @@ namespace STRATEGY.CLIENT.States
                     new(ClaimTypes.NameIdentifier, claims.userId.ToString()!),
                     new(ClaimTypes.Role, claims.Role.ToString()!),
                     new(ClaimTypes.StreetAddress, claims.RoleName.ToString()!),
-                     new(ClaimTypes.Country, claims.PermissionData.ToString()!)
+                    new(ClaimTypes.Country, claims.PermissionData.ToString()!),
+                    new(ClaimTypes.Surname, claims.DepartmentID.ToString()!)
                 }, AppConstants.AuthenticationType));
 
         }

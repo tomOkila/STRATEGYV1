@@ -52,6 +52,7 @@
 @code {
     private string SessionName = string.Empty;
     private string SessionEmail = string.Empty;
+    private int SessionDepartmentID;
     private int UserId;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
@@ -73,10 +74,9 @@
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
+            SessionDepartmentID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname).Value);
             //load system roles
             await GetPlanResponse();
-            selectedPlanResponse = new List<PlanResponse>() { selectedPlanResponse.FirstOrDefault() };
         }
         catch (Exception ex)
         {
