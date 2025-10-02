@@ -53,6 +53,7 @@
 @code {
     private string SessionName = string.Empty;
     private string SessionEmail = string.Empty;
+    private int SessionRoleID;
     private int UserId;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
@@ -64,6 +65,7 @@
 
     GetUserDTO getuser = new();
     List<GetUserDTO> getusers = new();
+    List<GetUserDTO> getspecificusers = new();
 
     Permissions permission = new();
     List<Permissions> permissions = new();
@@ -79,6 +81,14 @@
     private IEnumerable<AppRoles>? AvailableRoles { get; set; }
     private async Task GetApplicationRoles() => approles = await accountService.GetRolesAsync(UserId);
     private async Task GetApplicationUsers() => getusers = await accountService.GetUsersAsync(UserId);
+    private async Task GetSpecificApplicationUsers()
+    {
+
+        var resultUser = await accountService.GetUsersAsync(UserId);
+        getspecificusers = resultUser.Where(x => x.Id == UserId).ToList();
+        getusers = getspecificusers;
+
+    }
     private async Task GetApplicationPermissions() => permissions = await accountService.GetPermissionsAsync(UserId);
     private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
     private async Task GetDepartment() => departments = await strategyService.GetDepartmentAsync(UserId);
@@ -91,6 +101,7 @@
             var user = (await ClientAuthState).User;
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            SessionRoleID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         }
@@ -102,7 +113,16 @@
 
         //load system roles
         await GetApplicationRoles();
-        await GetApplicationUsers();
+        if (SessionRoleID==1)
+        {
+            await GetApplicationUsers();
+        }
+        else
+        {
+            await GetSpecificApplicationUsers();
+
+        }
+
         await GetApplicationPermissions();
         
 

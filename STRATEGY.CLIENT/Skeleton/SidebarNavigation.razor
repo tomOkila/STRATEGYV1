@@ -18,21 +18,22 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                <i class="icon-disc menu-icon"></i>
-                <span class="menu-title">Strategy</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-basic">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="manageemployees">Employee</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="managedepartment">Department</a></li>
-                </ul>
-            </div>
-        </li>
         <AuthorizeView Roles="1">
             <Authorized>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                        <i class="icon-disc menu-icon"></i>
+                        <span class="menu-title">Strategy</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="ui-basic">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item"> <a class="nav-link" href="manageemployees">Employee</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="managedepartment">Department</a></li>
+                        </ul>
+                    </div>
+                </li>
+    
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="collapse" href="#ui-planning" aria-expanded="false" aria-controls="ui-planning">
                         <i class="icon-stack menu-icon"></i>
@@ -76,8 +77,7 @@
         <span class="menu-title">Icons</span>
         </a>
         </li> *@
-        <AuthorizeView Roles="1">
-            <Authorized>
+     
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
                         <i class="icon-head menu-icon"></i>
@@ -87,13 +87,16 @@
                     <div class="collapse" id="auth">
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item"> <a class="nav-link" href="manageusers"> Users </a></li>
+                            <AuthorizeView Roles="1">
+                               <Authorized>
                             <li class="nav-item"> <a class="nav-link" href="manageroles"> Roles</a></li>
                             <li class="nav-item"> <a class="nav-link" href="managepermission"> Permissions </a></li>
+                                </Authorized>
+                            </AuthorizeView>
                         </ul>
                     </div>
                 </li>
-            </Authorized>
-        </AuthorizeView>
+           
     </ul>
 </nav>
 <style type="text/css">

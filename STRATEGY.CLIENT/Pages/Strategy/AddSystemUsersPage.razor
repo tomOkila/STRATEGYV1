@@ -18,91 +18,183 @@
         @*  <h3 class="card-title"><i class="fas fa-user-plus"></i> Add Employee</h3> *@
     </div>
     <!-- /.card-header -->
-    <div class="card-body">
-        <RadzenStack>
-            <RadzenTemplateForm TItem="RegisterUserDTO" Data=appuser Submit="Save" InvalidSubmit="OnInvalidSubmit">
-                <RadzenStack>
-                    <RadzenFormField Text="Name" Variant="Variant.Outlined">
-                        <ChildContent>
-                            <RadzenTextBox id="Name" Name="Name" @bind-Value=appuser.Name />
-                        </ChildContent>
-                        <Helper>
-                            <RadzenRequiredValidator Component="Name" Text="Name is required." />
-                        </Helper>
-                    </RadzenFormField>
+    @if (SessionRoleID==1)
+    {
+        <div class="card-body">
+            <RadzenStack>
+                <RadzenTemplateForm TItem="RegisterUserDTO" Data=appuser Submit="Save" InvalidSubmit="OnInvalidSubmit">
+                    <RadzenStack>
+                        <RadzenFormField Text="Name" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenTextBox id="Name" Name="Name" @bind-Value=appuser.Name />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="Name" Text="Name is required." />
+                            </Helper>
+                        </RadzenFormField>
 
-                    <RadzenFormField Text="Email" Variant="Variant.Outlined">
-                        <ChildContent>
-                            <RadzenTextBox id="Email" Name="Email" @bind-Value=appuser.Email />
-                        </ChildContent>
-                        <Helper>
-                            <RadzenRequiredValidator Component="Email" Text="Email is required." />
-                            <RadzenEmailValidator Component="Email" Text="Email address not in the correct format." />
-                        </Helper>
-                    </RadzenFormField>
+                        <RadzenFormField Text="Email" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenTextBox id="Email" Name="Email" @bind-Value=appuser.Email />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="Email" Text="Email is required." />
+                                <RadzenEmailValidator Component="Email" Text="Email address not in the correct format." />
+                            </Helper>
+                        </RadzenFormField>
 
-                    <RadzenFormField Text="Password" Variant="Variant.Outlined">
-                        <ChildContent>
-                            <RadzenPassword id="Password" Name="Password" @bind-Value=appuser.Password />
-                        </ChildContent>
-                        <Helper>
-                            <RadzenRequiredValidator Component="Password" Text="Password is required." />
+                        <RadzenFormField Text="Password" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenPassword id="Password" Name="Password" @bind-Value=appuser.Password />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="Password" Text="Password is required." />
 
-                        </Helper>
-                    </RadzenFormField>
-                    <RadzenFormField Text="ConfirmPassword" Variant="Variant.Outlined">
-                        <ChildContent>
-                            <RadzenPassword id="ConfirmPassword" Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
-                        </ChildContent>
-                        <Helper>
-                            <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm password is required." />
-                            <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(appuser.ConfirmPassword)) Value=appuser.Password Component="ConfirmPassword" Text="Passwords should be the same" Style="position: absolute" />
-                        </Helper>
-                    </RadzenFormField>
+                            </Helper>
+                        </RadzenFormField>
+                        <RadzenFormField Text="ConfirmPassword" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenPassword id="ConfirmPassword" Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm password is required." />
+                                <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(appuser.ConfirmPassword)) Value=appuser.Password Component="ConfirmPassword" Text="Passwords should be the same" Style="position: absolute" />
+                            </Helper>
+                        </RadzenFormField>
 
-                    <!--Dropdown Input Field-->
-                    <RadzenDropDown Data=@approles
-                                    @bind-Value=appuser.RoleId
-                                    TextProperty="RoleName"
-                                    AllowFiltering="true"
-                                    FilterAsYouType="true"
-                                    FilterPlaceholder="Select Role"
-                                    Placeholder="Select Role"
-                                    ValueProperty="Id"
-                                    Name="RoleName">
-                    </RadzenDropDown>
-                    <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="RoleName" Text="Rolename is required." />
+                        <!--Dropdown Input Field-->
+                        <RadzenDropDown Data=@approles
+                                        @bind-Value=appuser.RoleId
+                                        TextProperty="RoleName"
+                                        AllowFiltering="true"
+                                        FilterAsYouType="true"
+                                        FilterPlaceholder="Select Role"
+                                        Placeholder="Select Role"
+                                        ValueProperty="Id"
+                                        Name="RoleName">
+                        </RadzenDropDown>
+                        <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="RoleName" Text="Rolename is required." />
 
 
-                    <RadzenDropDown @bind-Value=@appuser.PermissionId
-                                    Data=@permissions
-                                    TextProperty="@nameof(Permissions.PermissionName)"
-                                    ValueProperty="@nameof(Permissions.PermissionId)"
-                                    Name="PermissionName"
-                                    Multiple=true
-                                    AllowClear=true
-                                    Placeholder="Select Permisssion">
-                    </RadzenDropDown>
-                    <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="PermissionName" Text="PermissionName is required." />
+                        <RadzenDropDown @bind-Value=@appuser.PermissionId
+                                        Data=@permissions
+                                        TextProperty="@nameof(Permissions.PermissionName)"
+                                        ValueProperty="@nameof(Permissions.PermissionId)"
+                                        Name="PermissionName"
+                                        Multiple=true
+                                        AllowClear=true
+                                        Placeholder="Select Permisssion">
+                        </RadzenDropDown>
+                        <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="PermissionName" Text="PermissionName is required." />
 
-                    <!--Dropdown Input Field-->
-                    <RadzenDropDown Data=@departments
-                                    @bind-Value=appuser.DepartmentId
-                                    TextProperty="DepartmentName"
-                                    AllowFiltering="true"
-                                    FilterAsYouType="true"
-                                    FilterPlaceholder="Select Department"
-                                    Placeholder="Select Department"
-                                    ValueProperty="DepartmentId"
-                                    Name="DepartmentName">
-                    </RadzenDropDown>
-                    <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DepartmentName" Text="Department is required." />
+                        <!--Dropdown Input Field-->
+                        <RadzenDropDown Data=@departments
+                                        @bind-Value=appuser.DepartmentId
+                                        TextProperty="DepartmentName"
+                                        AllowFiltering="true"
+                                        FilterAsYouType="true"
+                                        FilterPlaceholder="Select Department"
+                                        Placeholder="Select Department"
+                                        ValueProperty="DepartmentId"
+                                        Name="DepartmentName">
+                        </RadzenDropDown>
+                        <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DepartmentName" Text="Department is required." />
 
-                    <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
-                </RadzenStack>
-            </RadzenTemplateForm>
-        </RadzenStack>
-    </div>
+                        <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+                    </RadzenStack>
+                </RadzenTemplateForm>
+            </RadzenStack>
+        </div>
+    }
+    else
+    {
+        <div class="card-body">
+            <RadzenStack>
+                <RadzenTemplateForm TItem="RegisterUserDTO" Data=appuser Submit="Save" InvalidSubmit="OnInvalidSubmit">
+                    <RadzenStack>
+                        <RadzenFormField Text="Name" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenTextBox Disabled id="Name" Name="Name" @bind-Value=appuser.Name />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="Name" Text="Name is required." />
+                            </Helper>
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="Email" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenTextBox Disabled id="Email" Name="Email" @bind-Value=appuser.Email />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="Email" Text="Email is required." />
+                                <RadzenEmailValidator Component="Email" Text="Email address not in the correct format." />
+                            </Helper>
+                        </RadzenFormField>
+
+                        <RadzenFormField Text="Password" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenPassword id="Password" Name="Password" @bind-Value=appuser.Password />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="Password" Text="Password is required." />
+
+                            </Helper>
+                        </RadzenFormField>
+                        <RadzenFormField Text="ConfirmPassword" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenPassword id="ConfirmPassword" Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
+                            </ChildContent>
+                            <Helper>
+                                <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm password is required." />
+                                <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(appuser.ConfirmPassword)) Value=appuser.Password Component="ConfirmPassword" Text="Passwords should be the same" Style="position: absolute" />
+                            </Helper>
+                        </RadzenFormField>
+
+                        <!--Dropdown Input Field-->
+                        <RadzenDropDown Disabled Data=@approles
+                                        @bind-Value=appuser.RoleId
+                                        TextProperty="RoleName"
+                                        AllowFiltering="true"
+                                        FilterAsYouType="true"
+                                        FilterPlaceholder="Select Role"
+                                        Placeholder="Select Role"
+                                        ValueProperty="Id"
+                                        Name="RoleName">
+                        </RadzenDropDown>
+                        <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="RoleName" Text="Rolename is required." />
+
+
+                        <RadzenDropDown Disabled @bind-Value=@appuser.PermissionId
+                                        Data=@permissions
+                                        TextProperty="@nameof(Permissions.PermissionName)"
+                                        ValueProperty="@nameof(Permissions.PermissionId)"
+                                        Name="PermissionName"
+                                        Multiple=true
+                                        AllowClear=true
+                                        Placeholder="Select Permisssion">
+                        </RadzenDropDown>
+                        <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="PermissionName" Text="PermissionName is required." />
+
+                        <!--Dropdown Input Field-->
+                        <RadzenDropDown Disabled Data=@departments
+                                        @bind-Value=appuser.DepartmentId
+                                        TextProperty="DepartmentName"
+                                        AllowFiltering="true"
+                                        FilterAsYouType="true"
+                                        FilterPlaceholder="Select Department"
+                                        Placeholder="Select Department"
+                                        ValueProperty="DepartmentId"
+                                        Name="DepartmentName">
+                        </RadzenDropDown>
+                        <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DepartmentName" Text="Department is required." />
+
+                        <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+                    </RadzenStack>
+                </RadzenTemplateForm>
+            </RadzenStack>
+        </div>
+    }
+
     <!-- /.card-body -->
     <div class="card-footer">
     </div>
@@ -111,6 +203,7 @@
 @code {
     private string SessionName = string.Empty;
     private string SessionEmail = string.Empty;
+    private int SessionRoleID;
     private int UserId;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
@@ -146,6 +239,7 @@
             var user = (await ClientAuthState).User;
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            SessionRoleID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
         }
