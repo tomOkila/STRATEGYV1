@@ -1,4 +1,5 @@
 ﻿@page "/manageemployees"
+@attribute [Authorize(Roles = "1")]
 <PageTitle>STRATEGY | Employees</PageTitle>
 <div class="row">
     <div class="col-sm-12 mb-4 mb-xl-0">
@@ -13,10 +14,7 @@
 
 </div>
 
-@if (TagIds.Contains(1) || TagIds.Contains(2))
-{
-    <RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
-}        
+<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" /> 
 <RadzenDataGrid  id="mytable" AllowFiltering="true" AllowColumnResize="false"
                 AllowAlternatingRows="false"
                 AllowSorting="true"
@@ -40,13 +38,10 @@
                               FrozenPosition="Radzen.FrozenColumnPosition.Right"
                               Title="Actions">
             <Template Context="employees">
-                @if (TagIds.Contains(1) || TagIds.Contains(2))
-                {
-                    <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(employees))">
-                    </RadzenButton>
-                    <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(employees))">
-                    </RadzenButton>
-                }
+                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(employees))">
+                </RadzenButton>
+                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(employees))">
+                </RadzenButton>
             </Template>
         </RadzenDataGridColumn>
     </Columns>

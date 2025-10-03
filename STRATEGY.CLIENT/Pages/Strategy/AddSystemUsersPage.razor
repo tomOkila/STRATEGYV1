@@ -76,12 +76,13 @@
                         <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="RoleName" Text="Rolename is required." />
 
 
+
                         <RadzenDropDown @bind-Value=@appuser.PermissionId
                                         Data=@permissions
                                         TextProperty="@nameof(Permissions.PermissionName)"
                                         ValueProperty="@nameof(Permissions.PermissionId)"
                                         Name="PermissionName"
-                                        Multiple=true
+                                        Multiple=false
                                         AllowClear=true
                                         Placeholder="Select Permisssion">
                         </RadzenDropDown>
@@ -164,9 +165,10 @@
                         <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="RoleName" Text="Rolename is required." />
 
 
+
                         <RadzenDropDown Disabled @bind-Value=@appuser.PermissionId
                                         Data=@permissions
-                                        TextProperty="@nameof(Permissions.PermissionName)"
+                                        TextProperty=PermissionName
                                         ValueProperty="@nameof(Permissions.PermissionId)"
                                         Name="PermissionName"
                                         Multiple=true

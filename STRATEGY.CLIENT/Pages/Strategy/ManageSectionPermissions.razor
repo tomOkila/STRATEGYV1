@@ -1,19 +1,168 @@
-﻿@page "/managepermission"
+﻿@page "/managedetailedpermission"
 <PageTitle>STRATEGY | Manage Permissions</PageTitle>
 <div class="row">
     <div class="col-sm-12 mb-4 mb-xl-0">
         <h4 class="font-weight-bold text-dark">Manage User Permissions</h4>
         <div style="float:right;">
             <RadzenBreadCrumb>
-                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Path="/managepermission" Text="Home" />
                 <RadzenBreadCrumbItem Text="Manage Application Permissions" />
             </RadzenBreadCrumb>
         </div>
     </div>
 </div>
 
+<div class="card card-primary">
+    <div class="card-header text-white" Style="background-color: #EC37FC;font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif">
+        @* <h3 class="card-title"><i class="fas fa-user-plus"></i> Create Strategic Plan</h3> *@
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <RadzenStack>
+            <RadzenTemplateForm TItem="Permissions" Data=permissionDetail Submit="Save" InvalidSubmit="OnInvalidSubmit">
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="12" SizeSM="12">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Permission Name: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="PermissionName" @bind-Value=permissionDetail.PermissionName />
+                            <RadzenRequiredValidator Component="PermissionName" Text="PermissionName is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
 
+                <RadzenRow Gap="1rem" Style="margin-top:7px;">
+                    <RadzenColumn Size="8" SizeSM="8">
+                        <RadzenFormField Text="Create (Permission)" Variant="Variant.Filled">
+                            <RadzenRadioButtonList @bind-Value=permissionDetail.Create TValue="bool" class="rz-m-4 rz-mt-8">
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="True" Value="true" />
+                                    <RadzenRadioButtonListItem Text="False" Value="false" />
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </RadzenFormField>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem" Style="margin-top:7px;">
+                    <RadzenColumn Size="8" SizeSM="8">
+                        <RadzenFormField Text="Edit (Permission)" Variant="Variant.Filled">
+                            <RadzenRadioButtonList @bind-Value=permissionDetail.Update TValue="bool" class="rz-m-4 rz-mt-8">
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="True" Value="true" />
+                                    <RadzenRadioButtonListItem Text="False" Value="false" />
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </RadzenFormField>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem" Style="margin-top:7px;">
+                    <RadzenColumn Size="8" SizeSM="8">
+                        <RadzenFormField Text="Delete (Permission)" Variant="Variant.Filled">
+                            <RadzenRadioButtonList @bind-Value=permissionDetail.Delete TValue="bool" class="rz-m-4 rz-mt-8">
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="True" Value="true" />
+                                    <RadzenRadioButtonListItem Text="False" Value="false" />
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </RadzenFormField>
+                    </RadzenColumn>
+                </RadzenRow>
+             
+                
+
+                <RadzenButton Style="margin-top:20px;" Icon="save" ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+            </RadzenTemplateForm>
+        </RadzenStack>
+    </div>
+    <!-- /.card-body -->
+    <div class="card-footer">
+    </div>
+</div>
 
 @code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int SessionDepartmentID;
+    private int UserId;
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
 
+
+    Permissions permissionDetail = new();
+    List<Permissions> permissionDetails = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+
+        base.OnInitialized();
+        permissionDetail = myStateContainer.PermissionsValue;
+    }
+
+    async Task Save()
+    {
+        permissionDetail.UpdatedBy = UserId;
+        try
+        {
+            if (string.IsNullOrEmpty(permissionDetail.PermissionName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all permission details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (permissionDetail.PermissionId > 0)
+                response = await accountService.UpdatePermissionsAsync(permissionDetail);
+            else
+                response = await accountService.CreatePermissionsAsync(permissionDetail);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                permissionDetail = new();
+                Navmanager.NavigateTo("managepermission");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+  
+
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
 }

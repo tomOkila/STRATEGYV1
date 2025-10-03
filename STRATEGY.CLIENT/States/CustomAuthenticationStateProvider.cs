@@ -111,11 +111,13 @@ namespace STRATEGY.CLIENT.States
                 var UserID = Convert.ToInt32(token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)!.Value);
                 var Role = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Role)!.Value;
                 var RoleName = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.StreetAddress)!.Value;
-                var PermissionsData = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Country)!.Value;
+                var PermissionsCreate = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Country)!.Value;
+                var PermissionsUpdate = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Locality)!.Value;
+                var PermissionsDelete = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.StateOrProvince)!.Value;
                 var DepartmentID = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Surname)!.Value;
                 var fullName = "";
 
-                return new UserClaimsDTO(fullName, name, email, Role, RoleName, PermissionsData, DepartmentID, UserID);
+                return new UserClaimsDTO(fullName, name, email, Role, RoleName, PermissionsCreate, PermissionsUpdate, PermissionsDelete, DepartmentID, UserID);
             }
             catch (Exception)
             {
@@ -134,7 +136,9 @@ namespace STRATEGY.CLIENT.States
                     new(ClaimTypes.NameIdentifier, claims.userId.ToString()!),
                     new(ClaimTypes.Role, claims.Role.ToString()!),
                     new(ClaimTypes.StreetAddress, claims.RoleName.ToString()!),
-                    new(ClaimTypes.Country, claims.PermissionData.ToString()!),
+                    new(ClaimTypes.Country, claims.PermissionCreate.ToString()!),
+                    new(ClaimTypes.Locality, claims.PermissionUpdate.ToString()!),
+                    new(ClaimTypes.StateOrProvince, claims.PermissionDelete.ToString()!),
                     new(ClaimTypes.Surname, claims.DepartmentID.ToString()!)
                 }, AppConstants.AuthenticationType));
 

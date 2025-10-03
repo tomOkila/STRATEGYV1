@@ -13,7 +13,12 @@
 
 </div>
 
-<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+
+@if (PermissionCreate == true)
+{
+    <RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+}
+
 <RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
                 AllowAlternatingRows="false"
                 AllowSorting="true"
@@ -40,10 +45,19 @@
                               FrozenPosition="Radzen.FrozenColumnPosition.Right"
                               Title="Actions">
             <Template Context="pillars">
-                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(pillars))">
-                </RadzenButton>
-                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(pillars))">
-                </RadzenButton>
+                @if (PermissionUpdate == true)
+                {
+                    <RadzenButton Style="margin:5px;" Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(pillars))">
+                    </RadzenButton>
+                }
+
+                @if (PermissionDelete == true)
+                {
+                    <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(pillars))">
+                    </RadzenButton>
+                }
+
+
             </Template>
         </RadzenDataGridColumn>
     </Columns>
@@ -53,6 +67,11 @@
 @code {
     private string SessionName = string.Empty;
     private string SessionEmail = string.Empty;
+    private bool PermissionCreate;
+    private bool PermissionUpdate;
+    private bool PermissionDelete;
+
+    List<int> TagIds = new List<int>();
     private int UserId;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
@@ -65,8 +84,6 @@
 
     private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
 
-
-
     protected override async Task OnInitializedAsync()
     {
 
@@ -76,10 +93,15 @@
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
-
+            PermissionCreate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value);
+            PermissionUpdate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Locality).Value);
+            PermissionDelete = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.StateOrProvince).Value);
             //load system roles
             await GetPillars();
+
             selectedPillars = new List<Pillar>() { pillars.FirstOrDefault() };
+
+
         }
         catch (Exception ex)
         {
@@ -160,7 +182,7 @@
             </RadzenStack>
         </RadzenStack>
     </RadzenStack>
-        );
+    );
     }
 
 

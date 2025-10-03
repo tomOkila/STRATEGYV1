@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STRATEGY.WEBAPI.Data;
 
@@ -11,9 +12,11 @@ using STRATEGY.WEBAPI.Data;
 namespace STRATEGY.WEBAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003083514_AddUpdatedMigrationPermission")]
+    partial class AddUpdatedMigrationPermission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,32 +49,6 @@ namespace STRATEGY.WEBAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5155),
-                            RoleName = "Admin",
-                            UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5156)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5158),
-                            RoleName = "User",
-                            UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5159)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5160),
-                            RoleName = "Visitor",
-                            UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5161)
-                        });
                 });
 
             modelBuilder.Entity("STRATEGY.CLIENT.Models.AppUsers", b =>
@@ -139,17 +116,6 @@ namespace STRATEGY.WEBAPI.Migrations
                     b.HasKey("DepartmentId");
 
                     b.ToTable("Departments");
-
-                    b.HasData(
-                        new
-                        {
-                            DepartmentId = 1,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5190),
-                            DepartmentManager = "Head IT",
-                            DepartmentName = "IT Department",
-                            UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5191)
-                        });
                 });
 
             modelBuilder.Entity("STRATEGY.CLIENT.Models.DetailedSO", b =>
@@ -276,34 +242,34 @@ namespace STRATEGY.WEBAPI.Migrations
                         {
                             PermissionId = 1,
                             Create = true,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4957),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 35, 13, 987, DateTimeKind.Local).AddTicks(6997),
                             Delete = true,
                             PermissionName = "Admin",
                             Update = true,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4976)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 35, 13, 987, DateTimeKind.Local).AddTicks(7010)
                         },
                         new
                         {
                             PermissionId = 2,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4978),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 35, 13, 987, DateTimeKind.Local).AddTicks(7012),
                             Delete = false,
                             PermissionName = "User",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4979)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 35, 13, 987, DateTimeKind.Local).AddTicks(7012)
                         },
                         new
                         {
                             PermissionId = 3,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4981),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 35, 13, 987, DateTimeKind.Local).AddTicks(7014),
                             Delete = false,
                             PermissionName = "Visitor",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4982)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 35, 13, 987, DateTimeKind.Local).AddTicks(7014)
                         });
                 });
 
@@ -535,8 +501,9 @@ namespace STRATEGY.WEBAPI.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
+                    b.Property<string>("PermissionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");

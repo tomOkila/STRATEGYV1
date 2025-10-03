@@ -18,35 +18,35 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#ui-planning" aria-expanded="false" aria-controls="ui-planning">
+                <i class="icon-stack menu-icon"></i>
+                <span class="menu-title">Planning</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-planning">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="managepillar">Pillar</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="managestrategicobjectives">Strategic Objectives</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="managestrategicobjectivesdetails">Strategic Details</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="programschedule">Program Schedule</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="theplan">The Plan</a></li>
+                </ul>
+            </div>
+        </li>
+
         <AuthorizeView Roles="1">
             <Authorized>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                         <i class="icon-disc menu-icon"></i>
-                        <span class="menu-title">Strategy</span>
+                        <span class="menu-title">Meta Data</span>
                         <i class="menu-arrow"></i>
                     </a>
                     <div class="collapse" id="ui-basic">
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item"> <a class="nav-link" href="manageemployees">Employee</a></li>
                             <li class="nav-item"> <a class="nav-link" href="managedepartment">Department</a></li>
-                        </ul>
-                    </div>
-                </li>
-    
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-planning" aria-expanded="false" aria-controls="ui-planning">
-                        <i class="icon-stack menu-icon"></i>
-                        <span class="menu-title">Planning</span>
-                        <i class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="ui-planning">
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="managepillar">Pillar</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="managestrategicobjectives">Strategic Objectives</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="managestrategicobjectivesdetails">Strategic Details</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="programschedule">Program Schedule</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="theplan">The Plan</a></li>
                         </ul>
                     </div>
                 </li>
@@ -78,24 +78,24 @@
         </a>
         </li> *@
      
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-                        <i class="icon-head menu-icon"></i>
-                        <span class="menu-title">Adminstration</span>
-                        <i class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="auth">
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="manageusers"> Users </a></li>
-                            <AuthorizeView Roles="1">
-                               <Authorized>
-                            <li class="nav-item"> <a class="nav-link" href="manageroles"> Roles</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="managepermission"> Permissions </a></li>
-                                </Authorized>
-                            </AuthorizeView>
-                        </ul>
-                    </div>
-                </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+                <i class="icon-head menu-icon"></i>
+                <span class="menu-title">Administration</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="auth">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="manageusers"> Users </a></li>
+                    <AuthorizeView Roles="1">
+                        <Authorized>
+                    <li class="nav-item"> <a class="nav-link" href="manageroles"> Roles</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="managepermission"> Permissions </a></li>
+                        </Authorized>
+                    </AuthorizeView>
+                </ul>
+            </div>
+        </li>
            
     </ul>
 </nav>
@@ -129,10 +129,10 @@
             PermissionData = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value;
 
             //list the user permissions as below
-            TagIds = PermissionData.Split(',').Select(int.Parse).ToList();
+            //TagIds = PermissionData.Split(',').Select(int.Parse).ToList();
 
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-            AuthenticationResult = (await ClientAuthState!).User.Identity!.IsAuthenticated;
+            // var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+            // AuthenticationResult = (await ClientAuthState!).User.Identity!.IsAuthenticated;
         }
         catch (Exception)
         {

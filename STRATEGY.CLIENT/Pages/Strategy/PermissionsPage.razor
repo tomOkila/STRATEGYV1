@@ -1,4 +1,5 @@
 ﻿@page "/managepermission"
+@attribute [Authorize(Roles = "1")]
 <PageTitle>STRATEGY | Permissions</PageTitle>
 <div class="row">
     <div class="col-sm-12 mb-4 mb-xl-0">
@@ -30,6 +31,10 @@
     <Columns>
         <RadzenDataGridColumn TItem="Permissions" Property="PermissionId" Title="ID" Frozen="true" Width="20px" Visible="true" />
         <RadzenDataGridColumn TItem="Permissions" Property="PermissionName" Title="Name" Width="60px" />
+        <RadzenDataGridColumn TItem="Permissions" Property="Create" Title="Create" Width="60px" />
+        <RadzenDataGridColumn TItem="Permissions" Property="Update" Title="Update" Width="60px" />
+        <RadzenDataGridColumn TItem="Permissions" Property="Delete" Title="Delete" Width="60px" />
+
         <RadzenDataGridColumn Context="apppermissions"
                               Filterable="false"
                               Sortable="false"
@@ -133,13 +138,17 @@
     private void EditClicked(Permissions inconPermissions)
     {
         apppermission = inconPermissions;
-        ShowInlineDialog();
+        //ShowInlineDialog();
+        myStateContainer.SetPermissions(apppermission);
+        Navmanager.NavigateTo("managedetailedpermission");
     }
 
     private void CreateClicked()
     {
         apppermission = new();
-        ShowInlineDialog();
+        // ShowInlineDialog();
+        myStateContainer.SetPermissions(apppermission);
+        Navmanager.NavigateTo("managedetailedpermission");
     }
 
 

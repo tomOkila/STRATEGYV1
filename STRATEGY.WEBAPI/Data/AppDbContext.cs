@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using STRATEGY.CLIENT.Models;
+using STRATEGY.WEBAPI.Contract;
 
 namespace STRATEGY.WEBAPI.Data
 {
@@ -22,5 +23,31 @@ namespace STRATEGY.WEBAPI.Data
         public DbSet<ProgramSchedule> ProgramSchedules { get; set; }
         public DbSet<StrategicPlan> StrategicPlans { get; set; }
         public DbSet<Plan> Plans { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            //permisssions
+           modelBuilder.Entity<Permissions>().HasData(
+               new Permissions { PermissionId = 1, PermissionName = "Admin", Create = true, Update = true, Delete = true, CreateDate=DateTime.Now,UpdatedBy=0, UpdatedDate=DateTime.Now },
+               new Permissions { PermissionId = 2, PermissionName = "User", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+               new Permissions { PermissionId = 3, PermissionName = "Visitor", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
+            );
+
+            //roles
+            modelBuilder.Entity<AppRoles>().HasData(
+             new AppRoles { Id = 1, RoleName = "Admin",CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+             new AppRoles { Id = 2, RoleName = "User", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+             new AppRoles { Id = 3, RoleName = "Visitor", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
+            );
+
+
+            //department
+            modelBuilder.Entity<Department>().HasData(
+             new Department { DepartmentId = 1, DepartmentName = "IT Department",DepartmentManager="Head IT", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
+            );
+        }
+
     }
 }

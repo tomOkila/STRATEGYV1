@@ -10,6 +10,8 @@ namespace STRATEGY.CLIENT.States
         public Employee EmployeeValue { get; set; }
         public RegisterUserDTO AppUsersValue { get; set; }
 
+        public Permissions PermissionsValue { get; set; }
+
         public event Action OnStateChange;
         public void SetStrategicPlan(StrategicPlan StrategicPlanValue)
         {
@@ -26,6 +28,12 @@ namespace STRATEGY.CLIENT.States
         public void SetPlan(Plan PlanValue)
         {
             this.PlanValue = PlanValue;
+            NotifyStateChanged();
+        }
+
+        public void SetPermissions(Permissions PermissionsValue)
+        {
+            this.PermissionsValue = PermissionsValue;
             NotifyStateChanged();
         }
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STRATEGY.WEBAPI.Data;
 
@@ -11,9 +12,11 @@ using STRATEGY.WEBAPI.Data;
 namespace STRATEGY.WEBAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003084427_AddSeededRoleMigration")]
+    partial class AddSeededRoleMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,26 +54,26 @@ namespace STRATEGY.WEBAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5155),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9881),
                             RoleName = "Admin",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5156)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9882)
                         },
                         new
                         {
                             Id = 2,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5158),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9883),
                             RoleName = "User",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5159)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9884)
                         },
                         new
                         {
                             Id = 3,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5160),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9885),
                             RoleName = "Visitor",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5161)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9885)
                         });
                 });
 
@@ -139,17 +142,6 @@ namespace STRATEGY.WEBAPI.Migrations
                     b.HasKey("DepartmentId");
 
                     b.ToTable("Departments");
-
-                    b.HasData(
-                        new
-                        {
-                            DepartmentId = 1,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5190),
-                            DepartmentManager = "Head IT",
-                            DepartmentName = "IT Department",
-                            UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(5191)
-                        });
                 });
 
             modelBuilder.Entity("STRATEGY.CLIENT.Models.DetailedSO", b =>
@@ -276,34 +268,34 @@ namespace STRATEGY.WEBAPI.Migrations
                         {
                             PermissionId = 1,
                             Create = true,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4957),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9698),
                             Delete = true,
                             PermissionName = "Admin",
                             Update = true,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4976)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9713)
                         },
                         new
                         {
                             PermissionId = 2,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4978),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9715),
                             Delete = false,
                             PermissionName = "User",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4979)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9716)
                         },
                         new
                         {
                             PermissionId = 3,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4981),
+                            CreateDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9717),
                             Delete = false,
                             PermissionName = "Visitor",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 3, 13, 37, 15, 87, DateTimeKind.Local).AddTicks(4982)
+                            UpdatedDate = new DateTime(2025, 10, 3, 11, 44, 26, 897, DateTimeKind.Local).AddTicks(9718)
                         });
                 });
 
@@ -535,8 +527,9 @@ namespace STRATEGY.WEBAPI.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
+                    b.Property<string>("PermissionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");

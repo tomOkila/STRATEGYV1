@@ -99,6 +99,7 @@ namespace STRATEGY.WEBAPI.Contract
                 if (getRoleName is null) return new LoginResponse(false, "user role name not found");
 
                 string refreshToken = GenerateRefreshToken();
+                var resultToken = await GenerateJWTToken(getUser);
 
                 //clear refresh tokens
                 _appDbContext.RefreshTokens.RemoveRange(_appDbContext.RefreshTokens.Where(x => x.UserID == getUser.UserId.ToString()));
@@ -107,7 +108,7 @@ namespace STRATEGY.WEBAPI.Contract
                 //log refresh token
                 await AddToDatabase(new RefreshToken() { UserID = getUser.UserId.ToString(), Token = refreshToken, CreateDate = DateTime.Now });
 
-                return new LoginResponse(true, "Login successful", GenerateJWTToken(getUser), refreshToken);
+                return new LoginResponse(true, "Login successful", resultToken, refreshToken);
             }
             else
             {
@@ -127,7 +128,7 @@ namespace STRATEGY.WEBAPI.Contract
                 //return new TokenResponse();
             }
             var user = await _appDbContext.Users.FindAsync(Convert.ToInt32(token.UserID));
-            string newToken = GenerateJWTToken(user!);
+            string newToken = await GenerateJWTToken(user!);
             string newRefreshToken = GenerateRefreshToken();
             var saveResult = await SaveRefreshToken(user!.UserId.ToString(), newRefreshToken);
             if (saveResult.Flag) return new TokenResponse("Refresh Token", newToken, newRefreshToken);
@@ -143,6 +144,34 @@ namespace STRATEGY.WEBAPI.Contract
                 return new GeneralResponse(false, "User already exists");
             }
 
+            var getDepartment = await FindDepartmentByID(model.DepartmentId);
+            if (getDepartment == null)
+            {
+                return new GeneralResponse(false, "Department selected doesn't exist");
+            }
+
+            var getRole= await FindRoleName(model.RoleId);
+            if (getRole == null)
+            {
+                return new GeneralResponse(false, "Role selected doesn't exist");
+            }
+
+            //foreach (var item in model.PermissionId)
+            //{
+            //    var getPermission = await FindPermissionByID(item);
+            //    if (getPermission == null)
+            //    {
+            //        return new GeneralResponse(false, "Permission selected doesn't exist");
+            //    }
+            //}
+
+            var getPermission = await FindPermissionByID(model.PermissionId);
+            if (getPermission == null)
+            {
+                return new GeneralResponse(false, "Permission selected doesn't exist");
+            }
+
+
             _appDbContext.Users.Add(new AppUsers()
             {
                 Name = model.Name,
@@ -156,13 +185,19 @@ namespace STRATEGY.WEBAPI.Contract
             if (response > 0)
             {
                 //check that the permision exist
-                foreach (var userPermissionId in model.PermissionId)
+                //foreach (var userPermissionId in model.PermissionId)
+                //{
+                //    var userPermission = await _appDbContext.Permissions.FirstOrDefaultAsync(u => u.PermissionId == userPermissionId);
+                //    if (userPermission == null)
+                //    {
+                //        return new GeneralResponse(false, "Unable to complete registration at the moment. Please confirm the permission");
+                //    }
+                //}
+
+                var userPermission = await _appDbContext.Permissions.FirstOrDefaultAsync(u => u.PermissionId == model.PermissionId);
+                if (userPermission == null)
                 {
-                    var userPermission = await _appDbContext.Permissions.FirstOrDefaultAsync(u => u.PermissionId == userPermissionId);
-                    if (userPermission == null)
-                    {
-                        return new GeneralResponse(false, "Unable to complete registration at the moment. Please confirm the permission");
-                    }
+                    return new GeneralResponse(false, "Unable to complete registration at the moment. Please confirm the permission");
                 }
 
                 var userrole = await _appDbContext.Roles.FirstOrDefaultAsync(u => u.Id == model.RoleId);
@@ -196,13 +231,19 @@ namespace STRATEGY.WEBAPI.Contract
             appuseredit.UpdatedDate = DateTime.Now;
 
             //check that the permision exist
-            foreach (var userPermissionId in model.PermissionId)
+            //foreach (var userPermissionId in model.PermissionId)
+            //{
+            //    var userPermission = await _appDbContext.Permissions.FirstOrDefaultAsync(u => u.PermissionId == userPermissionId);
+            //    if (userPermission == null)
+            //    {
+            //        return new GeneralResponse(false, "Unable to complete update at the moment. Please confirm the permission");
+            //    }
+            //}
+
+            var userPermission = await _appDbContext.Permissions.FirstOrDefaultAsync(u => u.PermissionId == model.PermissionId);
+            if (userPermission == null)
             {
-                var userPermission = await _appDbContext.Permissions.FirstOrDefaultAsync(u => u.PermissionId == userPermissionId);
-                if (userPermission == null)
-                {
-                    return new GeneralResponse(false, "Unable to complete update at the moment. Please confirm the permission");
-                }
+                return new GeneralResponse(false, "Unable to complete update at the moment. Please confirm the permission");
             }
 
             //check the role
@@ -294,18 +335,19 @@ namespace STRATEGY.WEBAPI.Contract
         await _appDbContext.SaveChangesAsync();
         return new GeneralResponse(true, "Deleted");
     }
-    private string GenerateJWTToken(AppUsers user)
+    private async Task<string> GenerateJWTToken(AppUsers user)
     {
         try
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSection:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            var userPermission = await FindUserPermissionByID(user.UserId);
             var roleID = FindUserRole(user.UserId).Result.RoleId;
-            var userPermission = FindUserRole(user.UserId).Result.PermissionId;
             var roleName = FindRoleName(roleID).Result.RoleName;
+            var sysPermission = await FindPermissionByID(userPermission.PermissionId);
 
-            var userClaims = new[]
+           var userClaims = new[]
             {
             new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
             new Claim(ClaimTypes.Name,user.Name),
@@ -313,7 +355,9 @@ namespace STRATEGY.WEBAPI.Contract
             new Claim(ClaimTypes.Role,roleID.ToString().Trim()),
             new Claim(ClaimTypes.StreetAddress,roleName.ToString().Trim()),
             new Claim(ClaimTypes.Surname,user.DepartmentId.ToString().Trim()),
-            new Claim(ClaimTypes.Country,string.Join(",", userPermission).Trim()),
+            new Claim(ClaimTypes.Country,sysPermission.Create.ToString().Trim()),
+            new Claim(ClaimTypes.Locality,sysPermission.Update.ToString().Trim()),
+            new Claim(ClaimTypes.StateOrProvince,sysPermission.Delete.ToString().Trim()),
             };
 
             var token = new JwtSecurityToken(
@@ -359,6 +403,15 @@ namespace STRATEGY.WEBAPI.Contract
 
     private async Task<AppUsers> FinduserByEmailAsync(string email)
      => await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+    private async Task<Department> FindDepartmentByID(int DepartmentID)
+         => await _appDbContext.Departments.FirstOrDefaultAsync(u => u.DepartmentId == DepartmentID);
+
+    private async Task<Permissions> FindPermissionByID(int PermissionID)
+     => await _appDbContext.Permissions.FirstOrDefaultAsync(u => u.PermissionId == PermissionID);
+
+        private async Task<UserRoles> FindUserPermissionByID(int UserID)
+     => await _appDbContext.UserRoles.FirstOrDefaultAsync(u => u.UserId == UserID);
+
 
         private async Task<AppUsers> FinduserByEmailandIFAsync(string email, int Id)
      => await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email && u.UserId == Id);
@@ -371,7 +424,7 @@ namespace STRATEGY.WEBAPI.Contract
     }
 
 
-    public async Task<GeneralResponse> AssignUserToRole(AppUsers user, AppRoles role, IList<int>  PermissionId)
+    public async Task<GeneralResponse> AssignUserToRole(AppUsers user, AppRoles role, int  PermissionId)
     {
 
         //get the related IDs for role and user
