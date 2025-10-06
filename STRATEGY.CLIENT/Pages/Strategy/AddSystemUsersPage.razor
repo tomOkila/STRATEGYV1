@@ -101,6 +101,14 @@
                         </RadzenDropDown>
                         <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="DepartmentName" Text="Department is required." />
 
+
+                        <RadzenCard Variant="Variant.Outlined">
+                            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Drag and drop files to upload</RadzenText>
+                            <InputFile  OnChange="@SingleUpload4" style="margin-bottom:15px;" />
+                            <RadzenImage  Path=@appuser.ProfileImage Style="width: 15rem;" AlternateText="" />
+                        </RadzenCard>
+
+
                         <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
                     </RadzenStack>
                 </RadzenTemplateForm>
@@ -264,6 +272,14 @@
 
     async Task Save()
     {
+
+        //ensure the image is not empty
+        if (string.IsNullOrEmpty(appuser.ProfileImage))
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "The profile image cannot be passed as an empty string.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
         try
         {
             //confirm if the user is new or existing
@@ -328,6 +344,39 @@
 
     }
 
+
+
+    private async Task SingleUpload4(InputFileChangeEventArgs e)
+    {
+        string base64String = "";
+        try
+        {
+            await using MemoryStream fs = new MemoryStream();
+            await e.File.OpenReadStream(maxAllowedSize: 5048576).CopyToAsync(fs);
+            byte[] somBytes = GetBytes(fs);
+            base64String = Convert.ToBase64String(somBytes, 0, somBytes.Length);
+            appuser.ProfileImage = base64String;
+            appuser.ProfileImageName = e.File.Name;
+
+            System.Diagnostics.Debug.Print("Imatge 64: " + base64String + Environment.NewLine);
+        }
+
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.Print("ERROR: " + ex.Message + Environment.NewLine);
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+        }
+    }
+
+
+    public static byte[] GetBytes(Stream stream)
+    {
+        var bytes = new byte[stream.Length];
+        stream.Seek(0, SeekOrigin.Begin);
+        stream.ReadAsync(bytes, 0, bytes.Length);
+        stream.Dispose();
+        return bytes;
+    }
 
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)

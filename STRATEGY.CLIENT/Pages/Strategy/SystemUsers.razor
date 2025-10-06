@@ -44,7 +44,7 @@
                               FrozenPosition="Radzen.FrozenColumnPosition.Right"
                               Title="Actions">
             <Template Context="getusers">
-                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(getusers))">
+                <RadzenButton Style="margin:5px;" Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(getusers))">
                 </RadzenButton>
                 @if (SessionRoleID==1)
                 {
@@ -156,7 +156,7 @@
         inconRoles.RoleId = inconRoles1.RoleId;
         inconRoles.PermissionId = inconRoles1.PermissionId;
         inconRoles.DepartmentId = inconRoles1.DepartmentId;
-
+        inconRoles.ProfileImage = inconRoles1.ProfileImage;
 
         appuser = inconRoles;
         myStateContainer.SetAppUsers(appuser);

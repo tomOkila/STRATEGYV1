@@ -75,6 +75,7 @@ namespace STRATEGY.WEBAPI.Contract
                 response.RoleName = user.Roles.RoleName;
                 response.PermissionId = user.UserRoles.PermissionId;
                 response.DepartmentId = user.Departments.DepartmentId;
+                response.ProfileImage = user.Users.ProfileImage;
                 response1.Add(response);
             }
 
@@ -172,11 +173,21 @@ namespace STRATEGY.WEBAPI.Contract
             }
 
 
+            if (!string.IsNullOrEmpty(model.ProfileImageName))
+            {
+                Byte[] bytes = Convert.FromBase64String(model.ProfileImage);
+                File.WriteAllBytes(_config.GetConnectionString("PROFILEPIC_UPLOADFILE_PATH") + model.ProfileImageName, bytes);
+                //assign photo details
+                model.ProfileImage = _config.GetConnectionString("PROFILEPIC_UPLOADFILE_DBPATH") + model.ProfileImageName;
+            }
+
+
             _appDbContext.Users.Add(new AppUsers()
             {
                 Name = model.Name,
                 Email = model.Email,
                 DepartmentId = model.DepartmentId,
+                ProfileImage=model.ProfileImage,
                 Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
                 CreateDate = DateTime.Now
             });
@@ -220,12 +231,22 @@ namespace STRATEGY.WEBAPI.Contract
                 return new GeneralResponse(false, "User doesn't exists. Kindly recheck and try again!");
             }
 
+
+            if (!string.IsNullOrEmpty(model.ProfileImageName))
+            {
+                Byte[] bytes = Convert.FromBase64String(model.ProfileImage);
+                File.WriteAllBytes(_config.GetConnectionString("PROFILEPIC_UPLOADFILE_PATH") + model.ProfileImageName, bytes);
+                //assign photo details
+                model.ProfileImage = _config.GetConnectionString("PROFILEPIC_UPLOADFILE_DBPATH") + model.ProfileImageName;
+            }
+
             //update users
             AppUsers appuseredit = new AppUsers();
             appuseredit.Name = model.Name;
             appuseredit.Email = model.Email;
             appuseredit.UserId = model.Id;
             appuseredit.DepartmentId = model.DepartmentId;
+            appuseredit.ProfileImage = model.ProfileImage;
             appuseredit.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
             appuseredit.CreateDate = getUser.CreateDate;
             appuseredit.UpdatedDate = DateTime.Now;
@@ -353,6 +374,7 @@ namespace STRATEGY.WEBAPI.Contract
             new Claim(ClaimTypes.Name,user.Name),
             new Claim(ClaimTypes.Email,user.Email),
             new Claim(ClaimTypes.Role,roleID.ToString().Trim()),
+            new Claim(ClaimTypes.Thumbprint,user.ProfileImage.ToString().Trim()),
             new Claim(ClaimTypes.StreetAddress,roleName.ToString().Trim()),
             new Claim(ClaimTypes.Surname,user.DepartmentId.ToString().Trim()),
             new Claim(ClaimTypes.Country,sysPermission.Create.ToString().Trim()),

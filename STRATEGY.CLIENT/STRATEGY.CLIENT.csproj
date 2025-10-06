@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\ProfileImage\" />
     <Folder Include="wwwroot\PlanImages\" />
   </ItemGroup>
 

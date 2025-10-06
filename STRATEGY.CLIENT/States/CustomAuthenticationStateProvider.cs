@@ -114,10 +114,11 @@ namespace STRATEGY.CLIENT.States
                 var PermissionsCreate = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Country)!.Value;
                 var PermissionsUpdate = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Locality)!.Value;
                 var PermissionsDelete = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.StateOrProvince)!.Value;
+                var Thumbnail = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Thumbprint)!.Value;
                 var DepartmentID = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Surname)!.Value;
                 var fullName = "";
 
-                return new UserClaimsDTO(fullName, name, email, Role, RoleName, PermissionsCreate, PermissionsUpdate, PermissionsDelete, DepartmentID, UserID);
+                return new UserClaimsDTO(fullName, name, email, Thumbnail, Role, RoleName, PermissionsCreate, PermissionsUpdate, PermissionsDelete, DepartmentID, UserID);
             }
             catch (Exception)
             {
@@ -134,6 +135,7 @@ namespace STRATEGY.CLIENT.States
                     new(ClaimTypes.Name, claims.UserName!),
                     new(ClaimTypes.Email, claims.Email!),
                     new(ClaimTypes.NameIdentifier, claims.userId.ToString()!),
+                    new(ClaimTypes.Thumbprint, claims.Thumbnail.ToString()!),
                     new(ClaimTypes.Role, claims.Role.ToString()!),
                     new(ClaimTypes.StreetAddress, claims.RoleName.ToString()!),
                     new(ClaimTypes.Country, claims.PermissionCreate.ToString()!),
@@ -143,6 +145,7 @@ namespace STRATEGY.CLIENT.States
                 }, AppConstants.AuthenticationType));
 
         }
+        //     new Claim(ClaimTypes.Thumbprint,user.ProfileImage.ToString().Trim()),
 
         public async Task RemoveTokenFromBrowserLocalStorage()
        => await _localStorageService.RemoveItemAsync(AppConstants.StorageKey);

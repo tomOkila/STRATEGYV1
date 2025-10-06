@@ -18,5 +18,8 @@ namespace STRATEGY.CLIENT.DTOs
         //public IList<int> PermissionId { get; set; }
         public int PermissionId { get; set; }
         public int DepartmentId { get; set; }
+
+        public string ProfileImage { get; set; } = string.Empty;
+        public string ProfileImageName { get; set; } = string.Empty;
     }
 }

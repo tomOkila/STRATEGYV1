@@ -2,7 +2,7 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <div class="user-profile">
         <div class="user-image">
-            <img src="images/faces/face28.png">
+            <img src=@SessionImageURL>
         </div>
         <div class="user-name">
             @SessionEmail
@@ -112,6 +112,7 @@
     private string SessionName = string.Empty;
     private string SessionEmail = string.Empty;
     private string SessionRoleName = string.Empty;
+    private string SessionImageURL = string.Empty;
     private string PermissionData = string.Empty;
     List<int> TagIds = new List<int>();
     [CascadingParameter]
@@ -126,6 +127,7 @@
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             SessionRoleName = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.StreetAddress).Value;
+            SessionImageURL = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Thumbprint).Value;
             PermissionData = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value;
 
             //list the user permissions as below
