@@ -278,7 +278,10 @@
 
     async Task Save()
     {
-      
+
+        editPlan.DepartmentID = SessionDepartmentID;
+        editPlan.UserName = SessionName;
+
         try
         {
             if (string.IsNullOrEmpty(editPlan.UserName))
