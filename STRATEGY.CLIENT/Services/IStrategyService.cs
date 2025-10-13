@@ -45,6 +45,7 @@ namespace STRATEGY.CLIENT.Services
 
         Task<GeneralResponse> CreatePlanAsync(EditPlan model);
         Task<List<PlanResponse>> GetPlanAsync(int SessionUserId);
+        Task<List<PlanDocuments>> GetPlanDocumentsAsync(EditPlanDocument model);
         Task<GeneralResponse> UpdatePlanAsync(EditPlan model);
         Task<GeneralResponse> DeletePlanAsync(Plan model);
     }

@@ -44,6 +44,7 @@ namespace STRATEGY.WEBAPI.Contract
 
         Task<GeneralResponse> CreatePlanAsync(EditPlan model);
         Task<List<PlanResponse>> GetPlanAsync();
+        Task<List<PlanDocuments>> GetPlanDocumentsAsync(EditPlanDocument model);
         Task<GeneralResponse> UpdatePlanAsync(EditPlan model);
         Task<GeneralResponse> DeletePlanAsync(Plan model);
     }

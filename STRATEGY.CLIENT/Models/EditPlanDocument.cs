@@ -1,6 +1,6 @@
 ﻿namespace STRATEGY.CLIENT.Models
 {
-    public class EditPlan
+    public class EditPlanDocument
     {
         public int PlanID { get; set; }
         public string UserName { get; set; } = string.Empty;
@@ -10,7 +10,6 @@
         public int DetailedId { get; set; }
         public int ProgramScheduleId { get; set; }
         public string Witness { get; set; } = string.Empty;
-        public List<string> WitnessName { get; set; }
         public DateTime CreateDate { get; set; }
         public int UpdatedBy { get; set; }
         public DateTime UpdatedDate { get; set; }

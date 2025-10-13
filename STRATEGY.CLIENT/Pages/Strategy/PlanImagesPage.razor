@@ -1,0 +1,226 @@
+﻿@page "/viewimageplan"
+<PageTitle>STRATEGY | The Plan Documents</PageTitle>
+<div class="row">
+    <div class="col-sm-12 mb-4 mb-xl-0">
+        <h4 class="font-weight-bold text-dark">Plan Documents </h4>
+        <div style="float:right;">
+            <RadzenBreadCrumb>
+                <RadzenBreadCrumbItem Path="/home" Text="Home" />
+                <RadzenBreadCrumbItem Text="The Plan - Documents" />
+            </RadzenBreadCrumb>
+        </div>
+    </div>
+</div>
+
+
+<RadzenTabs @bind-SelectedIndex=@selectedIndex>
+    <Tabs>
+        <RadzenTabsItem Text="Plan Details">
+            <RadzenCard Variant=Variant.Filled Style="margin:5px;">
+                <RadzenText TextStyle="TextStyle.H6"><strong>Plan Information</strong></RadzenText>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left">
+                    <RadzenStack Gap="0">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">PlanID</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.PlanID</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">UserName</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.UserName</b></RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+
+            <RadzenCard Variant=Variant.Filled Style="margin:5px;">
+                <RadzenText TextStyle="TextStyle.H6"><strong>Department Details</strong></RadzenText>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left">
+                    <RadzenStack Gap="0">
+                        @foreach (var item in departments.Where(x => x.DepartmentId == editPlan.DepartmentID))
+                        {
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">DepartmentID</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DepartmentId</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">DepartmentName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DepartmentName</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">DepartmentManager</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DepartmentManager</b></RadzenText>
+                        }
+                    
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+
+            <RadzenCard Variant=Variant.Filled Style="margin:5px;">
+                <RadzenText TextStyle="TextStyle.H6"><strong>Pillar Details</strong></RadzenText>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left">
+                    <RadzenStack Gap="0">
+                        @foreach (var item in pillars.Where(x => x.PillarID == editPlan.PillarID))
+                        {
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">PillarID</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.PillarID</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">PillarName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.PillarName</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">PillarRecorder</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.PillarRecorder</b></RadzenText>
+                        }
+
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+            <RadzenCard Variant=Variant.Filled Style="margin:5px;">
+                <RadzenText TextStyle="TextStyle.H6"><strong>Strategic Objectives Details</strong></RadzenText>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left">
+                    <RadzenStack Gap="0">
+                        @foreach (var item in strategicObjectives.Where(x => x.SOId == editPlan.SOId))
+                        {
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">StrategicID</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.SOId</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">TargetName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.TargetName</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">GoalScorerName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.GoalScorerName</b></RadzenText>
+                        }
+
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+
+            <RadzenCard Variant=Variant.Filled Style="margin:5px;">
+                <RadzenText TextStyle="TextStyle.H6"><strong>Detailed Strategic Objectives Details</strong></RadzenText>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left">
+                    <RadzenStack Gap="0">
+                        @foreach (var item in detailedSOs.Where(x => x.DetailedId == editPlan.DetailedId))
+                        {
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">DetailedStrategicID</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedId</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">TargetName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedTargetName</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Detailed TargetHistory</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedTargetHistory</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Detailed ScorerName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedScorerName</b></RadzenText>
+                        }
+
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+
+            <RadzenCard Variant=Variant.Filled Style="margin:5px;">
+                <RadzenText TextStyle="TextStyle.H6"><strong>Program Schedule</strong></RadzenText>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left">
+                    <RadzenStack Gap="0">
+                        @foreach (var item in programSchedules.Where(x => x.ProgramScheduleId == editPlan.ProgramScheduleId))
+                        {
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">ProgramScheduleId</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.ProgramScheduleId</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">TargetName</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.RegistrationDate</b></RadzenText>
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Detailed TargetHistory</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.ProgramRegistrarName</b></RadzenText>
+                        }
+
+                    </RadzenStack>
+                </RadzenStack>
+            </RadzenCard>
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Documents">
+            <div class="row">
+                <div class="rz-p-12 rz-text-align-center">
+                    @foreach (var item in planDocuments)
+                    {
+                        <li><p><RadzenLink Path=@item.DocumentPath Style="width: 15rem;font-weight:bold;" Text=@item.DocumentName target="_blank" /></p></li><br />
+                    }
+                </div>
+            </div>
+        </RadzenTabsItem>
+       
+    </Tabs>
+</RadzenTabs>
+
+
+
+@code {
+    private string SessionName = string.Empty;
+    private string SessionEmail = string.Empty;
+    private int SessionDepartmentID;
+    private int UserId;
+    int selectedIndex = 0;
+
+    [CascadingParameter]
+    public Task<AuthenticationState>? ClientAuthState { get; set; }
+
+    Plan plan = new();
+    List<Plan> plans = new();
+    IList<Plan> selectedPlans;
+
+    EditPlanDocument editPlan = new();
+    List<EditPlanDocument> editPlans = new();
+
+    PlanDocuments planDocument = new();
+    List<PlanDocuments> planDocuments = new();
+
+    Department department = new();
+    List<Department> departments = new();
+
+    Pillar pillar = new();
+    List<Pillar> pillars = new();
+
+    StrategicObjective strategicObjective = new();
+    List<StrategicObjective> strategicObjectives = new();
+
+    DetailedSO detailedSO = new();
+    List<DetailedSO> detailedSOs = new();
+
+    ProgramSchedule programSchedule = new();
+    List<ProgramSchedule> programSchedules = new();
+
+
+    private async Task GetPlanDocuments() => planDocuments = await strategyService.GetPlanDocumentsAsync(editPlan);
+    private async Task GetDepartments() => departments = await strategyService.GetDepartmentAsync(UserId);
+    private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
+    private async Task GetStrategicObjectives() => strategicObjectives = await strategyService.GetStrategicObjectivesAsync(UserId);
+    private async Task GetDetailedStrategicObjectives() => detailedSOs = await strategyService.GetDetailedStrategicObjectivesAsync(UserId);
+    private async Task GetProgramSchedule() => programSchedules = await strategyService.GetProgramScheduleAsync(UserId);
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+            var user = (await ClientAuthState).User;
+            SessionName = user.Identity.Name;
+            SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            SessionDepartmentID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname).Value);
+        }
+        catch (Exception ex)
+        {
+            SessionName = null!;
+            SessionEmail = null!;
+        }
+
+
+        base.OnInitialized();
+        plan = myStateContainer.PlanValue;
+        if (plan.PlanID > 0)
+        {
+            editPlan.PlanID = plan.PlanID;
+            editPlan.UserName = SessionName!;
+            editPlan.DepartmentID = plan.DepartmentID;
+            editPlan.PillarID = plan.PillarID;
+            editPlan.SOId = plan.SOId;
+            editPlan.DetailedId = plan.DetailedId;
+            editPlan.ProgramScheduleId = plan.ProgramScheduleId;
+            editPlan.Witness = "test";
+            editPlan.UpdatedBy = UserId;
+        }
+        else
+        {
+            editPlan.UserName = SessionName!;
+        }
+
+
+        await GetPlanDocuments();
+        await GetDepartments();
+        await GetPillars();
+        await GetStrategicObjectives();
+        await GetDetailedStrategicObjectives();
+        await GetProgramSchedule();
+    }
+}

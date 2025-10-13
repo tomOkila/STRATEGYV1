@@ -177,16 +177,14 @@ namespace STRATEGY.WEBAPI.Contract
             }
 
 
-            if (!string.IsNullOrEmpty(model.WitnessName))
-            {
-                Byte[] bytes = Convert.FromBase64String(model.Witness);
-                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_PATH") + model.WitnessName, bytes);
-                //assign photo details
-                model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
-            }
-
-
-            _appDbContext.Plans.Add(new Plan()
+            //if (!string.IsNullOrEmpty(model.WitnessName))
+            //{
+            //    Byte[] bytes = Convert.FromBase64String(model.Witness);
+            //    File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_PATH") + model.WitnessName, bytes);
+            //    //assign photo details
+            //    model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
+            //}
+            var plandetails = new Plan()
             {
                 UserName = model.UserName,
                 DepartmentID = model.DepartmentID,
@@ -196,8 +194,31 @@ namespace STRATEGY.WEBAPI.Contract
                 ProgramScheduleId = model.ProgramScheduleId,
                 Witness = model.Witness,
                 CreateDate = DateTime.Now
-            });
+            };
+
+            _appDbContext.Plans.Add(plandetails);
             await _appDbContext.SaveChangesAsync();
+
+
+            int newStudentId = plandetails.PlanID;
+            //add plan document
+            if (model.WitnessName.Count > 0)
+            {
+                foreach (var item in model.WitnessName)
+                {
+                    _appDbContext.PlanDocuments.Add(new PlanDocuments()
+                    {
+                        PlanID = newStudentId,
+                        DocumentName = item,
+                        DocumentPath = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + item,
+                        CreateDate = DateTime.Now
+                    });
+                }
+                await _appDbContext.SaveChangesAsync();
+            }
+
+           
+
             return new GeneralResponse(true, "Plan Added Successfully");
 
         }
@@ -437,6 +458,12 @@ await _appDbContext.Pillars.ToListAsync();
         }
 
 
+        public async Task<List<PlanDocuments>> GetPlanDocumentsAsync(EditPlanDocument model) =>
+        await _appDbContext.PlanDocuments.Where(x=>x.PlanID == model.PlanID).OrderBy(i => i.PlanID)
+        .AsNoTracking()
+        .Include(gd => gd.Plan)
+        .ToListAsync();
+        
 
         public async Task<GeneralResponse> UpdateDepartmentAsync(Department model)
         {
@@ -640,13 +667,13 @@ await _appDbContext.Pillars.ToListAsync();
                 return new GeneralResponse(false, "Program schedule doesn't exist");
             }
 
-            if (!string.IsNullOrEmpty(model.WitnessName))
-            {
-                Byte[] bytes = Convert.FromBase64String(model.Witness);
-                File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_PATH") + model.WitnessName, bytes);
-                //assign photo details
-                model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
-            }
+            //if (!string.IsNullOrEmpty(model.WitnessName))
+            //{
+            //    Byte[] bytes = Convert.FromBase64String(model.Witness);
+            //    File.WriteAllBytes(_config.GetConnectionString("PLAN_UPLOADFILE_PATH") + model.WitnessName, bytes);
+            //    //assign photo details
+            //    model.Witness = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + model.WitnessName;
+            //}
 
 
             var strategicPlanResp = await _appDbContext.Plans.FindAsync(model.PlanID);
@@ -667,8 +694,32 @@ await _appDbContext.Pillars.ToListAsync();
                 strategicPlanResp.CreateDate = strategicPlanResp.CreateDate;
                 strategicPlanResp.UpdatedDate = DateTime.Now;
                 await _appDbContext.SaveChangesAsync();
+
+
+                //delete existing documents
+                _appDbContext.PlanDocuments
+               .Where(e => e.PlanID == model.PlanID)
+               .ExecuteDelete();
+
+                //add plan document
+                if (model.WitnessName.Count > 0)
+                {
+                    foreach (var item in model.WitnessName)
+                    {
+                        _appDbContext.PlanDocuments.Add(new PlanDocuments()
+                        {
+                            PlanID = model.PlanID,
+                            DocumentName = item,
+                            DocumentPath = _config.GetConnectionString("PLAN_UPLOADFILE_DBPATH") + item,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+                    await _appDbContext.SaveChangesAsync();
+                }
+
                 return new GeneralResponse(true, "Plan Updated Successfully");
             }
+
         }
 
         private async Task<Department> FindDepartmentByNameAsync(string departmentName)

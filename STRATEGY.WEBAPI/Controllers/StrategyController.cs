@@ -205,6 +205,11 @@ namespace STRATEGY.WEBAPI.Controllers
         public async Task<ActionResult<List<Plan>>> GetPlanAsync()
 => Ok(await strategy.GetPlanAsync());
 
+
+        [HttpPost("plandocumentlist")]
+        public async Task<ActionResult<List<PlanDocuments>>> GetPlanDocumentsAsync(EditPlanDocument model)
+=> Ok(await strategy.GetPlanDocumentsAsync(model));
+
         [HttpPut("updatePlan")]
         public async Task<IActionResult> UpdatePlanAsync([FromBody] EditPlan model)
         {

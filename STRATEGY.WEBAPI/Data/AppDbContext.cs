@@ -23,8 +23,9 @@ namespace STRATEGY.WEBAPI.Data
         public DbSet<ProgramSchedule> ProgramSchedules { get; set; }
         public DbSet<StrategicPlan> StrategicPlans { get; set; }
         public DbSet<Plan> Plans { get; set; }
+        public DbSet<PlanDocuments> PlanDocuments { get; set; }
 
-
+        //
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

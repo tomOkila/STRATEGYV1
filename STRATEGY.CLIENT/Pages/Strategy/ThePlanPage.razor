@@ -41,6 +41,8 @@
             <Template Context="planResponses">
                 <RadzenButton Icon="visibility" ButtonStyle="Radzen.ButtonStyle.Info" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewClicked(planResponses))">
                 </RadzenButton>
+                <RadzenButton Icon="details" ButtonStyle="Radzen.ButtonStyle.Secondary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args => ViewImageClicked(planResponses))">
+                </RadzenButton>
                 <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(planResponses))">
                 </RadzenButton>
                 <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>DeleteConfirmClicked(planResponses))">
@@ -95,6 +97,9 @@
         Navmanager.NavigateTo("editplan");
     }
 
+
+  
+
     private void EditClicked(PlanResponse inconPlanReponse)
     {
         planResponse = inconPlanReponse;
@@ -142,6 +147,25 @@
     {
         planResponse = inconPlanReponse;
         ShowViewInlineDialog();
+    }
+
+    private void ViewImageClicked(PlanResponse inconPlanReponse)
+    {
+        planResponse = inconPlanReponse;
+        //ShowInlineDialog();
+        //create strategic plan models
+        Plan strategicPlan1 = new Plan();
+        strategicPlan1.PlanID = planResponse.PlanID;
+        strategicPlan1.DepartmentID = planResponse.DepartmentID;
+        strategicPlan1.UserName = planResponse.UserName;
+        strategicPlan1.PillarID = planResponse.PillarID;
+        strategicPlan1.SOId = planResponse.SOId;
+        strategicPlan1.DetailedId = planResponse.DetailedId;
+        strategicPlan1.ProgramScheduleId = planResponse.ProgramScheduleId;
+        strategicPlan1.Witness = planResponse.Witness;
+
+        myStateContainer.SetPlan(strategicPlan1);
+        Navmanager.NavigateTo("viewimageplan");
     }
 
     async Task ShowViewInlineDialog()

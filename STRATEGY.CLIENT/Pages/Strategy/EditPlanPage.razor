@@ -1,4 +1,9 @@
 ﻿@page "/editplan"
+@using System.Net.Http.Headers
+@using System.Net.Http.Headers
+@inject HttpClient httpClient
+@inject IConfiguration Configuration
+
 <PageTitle>STRATEGY | Edit Plan</PageTitle>
 <div class="row">
     <div class="col-sm-12 mb-4 mb-xl-0">
@@ -136,8 +141,23 @@
                         <RadzenColumn Size="6" SizeSM="6">
                             <RadzenCard Variant="Variant.Outlined">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Drag and drop files to upload</RadzenText>
-                                <InputFile OnChange="@SingleUpload4" style="margin-bottom:15px;" />
-                                <RadzenImage Path=@editPlan.Witness Style="width: 15rem;" AlternateText="" />
+                           @*      <InputFile OnChange="@SingleUpload4" style="margin-bottom:15px;" /> *@
+                                <InputFile OnChange="OnInputFileChange" multiple />
+                                <hr />
+
+                                <ul>
+                                    @if (fileNames.Count > 0)
+                                    {
+                                        @foreach (var fileName in fileNames)
+                                        {
+                                            <li>
+                                                File: @fileName <br>
+                                                <span> Stored FileName: @GetStoredFileName(fileName) </span>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                               @*  <RadzenImage Path=@editPlan.Witness Style="width: 15rem;" AlternateText="" /> *@
                             </RadzenCard>
                         </RadzenColumn>
                     </RadzenStack>
@@ -186,6 +206,14 @@
 
     Department department = new();
     List<Department> departments = new();
+
+
+    private List<string> fileNames = new();
+    private long maxFileSize = long.MaxValue;
+    private int maxAllowedFiles = int.MaxValue;
+    private List<UploadResult> uploadResults = new();
+    public string mySetting { get; set; } = string.Empty;
+
 
     private async Task GetPlans() => planResponses = await strategyService.GetPlanAsync(UserId);
     private async Task GetPillars() => pillars = await strategyService.GetPillarAsync(UserId);
@@ -253,7 +281,7 @@
             byte[] somBytes = GetBytes(fs);
             base64String = Convert.ToBase64String(somBytes, 0, somBytes.Length);
             editPlan.Witness = base64String;
-            editPlan.WitnessName = e.File.Name;
+            //editPlan.WitnessName = e.File.Name;
 
             System.Diagnostics.Debug.Print("Imatge 64: " + base64String + Environment.NewLine);
         }
@@ -275,12 +303,70 @@
     }
 
 
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        fileNames.Clear();
+
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+            {
+                var fileContent = new StreamContent(file.OpenReadStream(maxFileSize));
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                fileNames.Add(file.Name);
+                content.Add(
+                    content: fileContent,
+                    name: "\"files\"",
+                    fileName: file.Name
+                );
+            }
+
+            var response = await httpClient.PostAsync(mySetting, content);
+            var newUploadResults = await response.Content.ReadFromJsonAsync<List<UploadResult>>();
+
+            //clear list first before adding new items
+            uploadResults.Clear();
+
+            if (newUploadResults is not null)
+            {
+                uploadResults = uploadResults.Concat(newUploadResults).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+
+    }
+
+    protected override void OnInitialized()
+    {
+        mySetting = Configuration.GetValue<string>("ConnectionStrings:HTTPCLIENTURL");
+    }
+
+
+    private string? GetStoredFileName(string fileName)
+    {
+        var uploadResult = uploadResults.SingleOrDefault(f => f.FileName == fileName);
+        if (uploadResult is not null)
+        {
+            return uploadResult.StoredFileName;
+        }
+        else
+        {
+            return "File not found";
+        }
+    }
+
 
     async Task Save()
     {
 
         editPlan.DepartmentID = SessionDepartmentID;
         editPlan.UserName = SessionName;
+        editPlan.WitnessName = fileNames;
 
         try
         {
