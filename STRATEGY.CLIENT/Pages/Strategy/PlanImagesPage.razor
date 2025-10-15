@@ -18,14 +18,91 @@
         <RadzenTabsItem Text="Plan Details">
             <RadzenCard Variant=Variant.Filled Style="margin:5px;">
                 <RadzenText TextStyle="TextStyle.H6"><strong>Plan Information</strong></RadzenText>
-                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left">
-                    <RadzenStack Gap="0">
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
+                    <RadzenColumn SizeSM="6">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">PlanID</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.PlanID</b></RadzenText>
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">UserName</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.UserName</b></RadzenText>
-                    </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Target Group</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.TargetGroup</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Targeted</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.Targeted</b></RadzenText>
+                    </RadzenColumn>
                 </RadzenStack>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
+                    
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Key Performance Indicators</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.StraKeyPerfIndicators</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Key Performance Evaluation</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.KeyPerfIndicatorsEvaluation</b></RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Executive Activity Analysis</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ExeActivityAnalysis</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Entity Responsible</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.EntityResponsible</b></RadzenText>
+                    </RadzenColumn>
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
+                    
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Actual Performance</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ActualPerformance</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Actual Implementation Steps</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ActImpSteps</b></RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Participating Parties</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.PartParties</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Implementation StartDate</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ImpStartDate</b></RadzenText>
+                    </RadzenColumn>
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Completion Date</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.CompletionDate</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Proposed Cost</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ProposedCost</b></RadzenText>
+                    </RadzenColumn>
+             
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Initiative Status</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@InitiativeStatusList.Where(x=>x.InitiativeStatusID==editPlan.InitiativeStatus).FirstOrDefault().InitiativeStatusName</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Evidence</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.Evidence</b></RadzenText>
+                    </RadzenColumn>
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
+                    
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Estimated Cost</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.EstimatedCost</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Actual Cost</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ActualCost</b></RadzenText>
+                    </RadzenColumn>
+
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">TeamComment</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.TeamComment</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">SupervisorReview</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.SupervisorReview</b></RadzenText>
+                    </RadzenColumn>
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
+                    
+                    <RadzenColumn SizeSM="6">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">WitnessDetail</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.WitnessDetail</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">SectionComment</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.SectionComment</b></RadzenText>
+                    </RadzenColumn>
+                </RadzenStack>
+
             </RadzenCard>
 
             <RadzenCard Variant=Variant.Filled Style="margin:5px;">
@@ -170,6 +247,14 @@
     ProgramSchedule programSchedule = new();
     List<ProgramSchedule> programSchedules = new();
 
+    //add initative status
+
+    IList<InitiativeStatus> InitiativeStatusList = new List<InitiativeStatus>() {
+                new InitiativeStatus(){ InitiativeStatusID=1, InitiativeStatusName="INPROGRESS"},
+                new InitiativeStatus(){ InitiativeStatusID=2, InitiativeStatusName="DO"},
+                new InitiativeStatus(){ InitiativeStatusID=2, InitiativeStatusName="POSTPONED"},
+                                };
+
 
     private async Task GetPlanDocuments() => planDocuments = await strategyService.GetPlanDocumentsAsync(editPlan);
     private async Task GetDepartments() => departments = await strategyService.GetDepartmentAsync(UserId);
@@ -208,6 +293,29 @@
             editPlan.DetailedId = plan.DetailedId;
             editPlan.ProgramScheduleId = plan.ProgramScheduleId;
             editPlan.Witness = "test";
+
+            editPlan.StraKeyPerfIndicators = plan.StraKeyPerfIndicators;
+            editPlan.KeyPerfIndicatorsEvaluation = plan.KeyPerfIndicatorsEvaluation;
+            editPlan.TargetGroup = plan.TargetGroup;
+            editPlan.Targeted = plan.Targeted;
+            editPlan.ActualPerformance = plan.ActualPerformance;
+            editPlan.ActImpSteps = plan.ActImpSteps;
+            editPlan.ExeActivityAnalysis = plan.ExeActivityAnalysis;
+            editPlan.EntityResponsible = plan.EntityResponsible;
+            editPlan.PartParties = plan.PartParties;
+            editPlan.ImpStartDate = plan.ImpStartDate;
+            editPlan.CompletionDate = plan.CompletionDate;
+            editPlan.ProposedCost = plan.ProposedCost;
+            editPlan.EstimatedCost = plan.EstimatedCost;
+            editPlan.ActualCost = plan.ActualCost;
+            editPlan.InitiativeStatus = plan.InitiativeStatus;
+            editPlan.Evidence = plan.Evidence;
+            editPlan.WitnessDetail = plan.WitnessDetail;
+            editPlan.SectionComment = plan.SectionComment;
+            editPlan.TeamComment = plan.TeamComment;
+            editPlan.SupervisorReview = plan.SupervisorReview;
+
+
             editPlan.UpdatedBy = UserId;
         }
         else

@@ -81,7 +81,7 @@
                         <RadzenStack Gap="0.1rem">
                             <RadzenLabel Text="Strategic Objectives: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
                             <!--Dropdown Input Field-->
-                            <RadzenDropDown Data=@strategicObjectives.Where(x=>x.PillarId==editPlan.PillarID)
+                            <RadzenDropDown Data=@strategicObjectives.Where(x => x.PillarId == editPlan.PillarID)
                                             @bind-Value=editPlan.SOId
                                             TextProperty="TargetName"
                                             AllowFiltering="true"
@@ -100,7 +100,7 @@
                             <RadzenStack Gap="0.1rem">
                                 <RadzenLabel Text="Detailed Strategic Objectives: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
                                 <!--Dropdown Input Field-->
-                                <RadzenDropDown Data=@detailedSOs.Where(x=>x.SOId==editPlan.SOId)
+                                <RadzenDropDown Data=@detailedSOs.Where(x => x.SOId == editPlan.SOId)
                                                 @bind-Value=editPlan.DetailedId
                                                 TextProperty="DetailedTargetName"
                                                 AllowFiltering="true"
@@ -122,7 +122,7 @@
                         <RadzenStack Gap="0.1rem">
                             <RadzenLabel Text="Program Schedule: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
                             <!--Dropdown Input Field-->
-                            <RadzenDropDown Data=@programSchedules.Where(x=>x.DetailedId==editPlan.DetailedId)
+                            <RadzenDropDown Data=@programSchedules.Where(x => x.DetailedId == editPlan.DetailedId)
                                             @bind-Value=editPlan.ProgramScheduleId
                                             TextProperty="ProgramRegistrarName"
                                             AllowFiltering="true"
@@ -137,11 +137,11 @@
                         </RadzenStack>
                     </RadzenColumn>
 
-                    <RadzenStack Gap="1rem">
+                    <RadzenStack Gap="1rem" Style="margin:5px;">
                         <RadzenColumn Size="6" SizeSM="6">
                             <RadzenCard Variant="Variant.Outlined">
                                 <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Drag and drop files to upload</RadzenText>
-                           @*      <InputFile OnChange="@SingleUpload4" style="margin-bottom:15px;" /> *@
+                                @*      <InputFile OnChange="@SingleUpload4" style="margin-bottom:15px;" /> *@
                                 <InputFile OnChange="OnInputFileChange" multiple />
                                 <hr />
 
@@ -157,10 +157,204 @@
                                         }
                                     }
                                 </ul>
-                               @*  <RadzenImage Path=@editPlan.Witness Style="width: 15rem;" AlternateText="" /> *@
+                                @*  <RadzenImage Path=@editPlan.Witness Style="width: 15rem;" AlternateText="" /> *@
                             </RadzenCard>
                         </RadzenColumn>
                     </RadzenStack>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Strategic Performance Indicators: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="StraKeyPerfIndicators" @bind-Value=editPlan.StraKeyPerfIndicators />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="StraKeyPerfIndicators" Text="Strategic Performance Indicators is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Key Performance Indicator Evaluation: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="KeyPerfIndicatorsEvaluation" @bind-Value=editPlan.KeyPerfIndicatorsEvaluation />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="KeyPerfIndicatorsEvaluation" Text="Key Performance Indicator Evaluation is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Target Group: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="TargetGroup" @bind-Value=editPlan.TargetGroup />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="TargetGroup" Text="Target Group is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Targeted: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="Targeted" @bind-Value=editPlan.Targeted />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="Targeted" Text="Targeted is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Actual Performance: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="ActualPerformance" @bind-Value=editPlan.ActualPerformance />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="ActualPerformance" Text="Actual Performance is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Actual Implementation Steps" Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="ActImpSteps" @bind-Value=editPlan.ActImpSteps />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="ActImpSteps" Text="Actual Implementation Steps is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Executive Activity Analysis: " Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="ExeActivityAnalysis" @bind-Value=editPlan.ExeActivityAnalysis />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="ExeActivityAnalysis" Text="Executive Activity Analysis is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Entity Responsible" Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="EntityResponsible" @bind-Value=editPlan.EntityResponsible />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="EntityResponsible" Text="Entity Responsible is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Participating Parties" Style="font-weight:bold;color:black" />
+                            <RadzenTextBox Name="PartParties" @bind-Value=editPlan.PartParties />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="PartParties" Text="Participating Parties is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Implementation Start Date" Style="font-weight:bold;color:black" />
+                            <RadzenDatePicker Name="ImpStartDate" @bind-Value=editPlan.ImpStartDate />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="ImpStartDate" Text="Implementation Start Date is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Completion Date" Style="font-weight:bold;color:black" />
+                            <RadzenDatePicker Name="CompletionDate" @bind-Value=editPlan.CompletionDate />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="CompletionDate" Text="Completion Date is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Proposed Cost" Style="font-weight:bold;color:black" />
+                            <RadzenNumeric Name="ProposedCost" @bind-Value=editPlan.ProposedCost />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="ProposedCost" Text="Proposed Cost is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Estimated Cost" Style="font-weight:bold;color:black" />
+                            <RadzenNumeric Name="EstimatedCost" @bind-Value=editPlan.EstimatedCost />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="EstimatedCost" Text="Estimated Cost is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Actual Cost" Style="font-weight:bold;color:black" />
+                            <RadzenNumeric Name="ActualCost" @bind-Value=editPlan.ActualCost />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="ProposedCost" Text="Actual Cost is required." />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+
+                      <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack>
+                            <RadzenStack Gap="0.1rem">
+                                <RadzenLabel Text="Initiative Status: " Style="font-weight:bold;color:black;padding:0px;margin:0px;" />
+                                <!--Dropdown Input Field-->
+                                <RadzenDropDown Data=@InitiativeStatusList
+                                                @bind-Value=editPlan.InitiativeStatus
+                                                TextProperty="InitiativeStatusName"
+                                                AllowFiltering="true"
+                                                FilterAsYouType="true"
+                                                FilterPlaceholder="Initiative Status"
+                                                Placeholder="Initiative Status"
+                                                ValueProperty="InitiativeStatusID"
+                                                Name="InitiativeStatusName"
+                                                Style="font-weight:bold">
+                                </RadzenDropDown>
+                                <RadzenRequiredValidator DefaultValue=0 Component="InitiativeStatusName" Text="Detailed TargetName is required." />
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenColumn>
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Evidence" Style="font-weight:bold;color:black" />
+                            <RadzenTextArea Name="Evidence" @bind-Value=editPlan.Evidence />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="Evidence" Text="Evidence is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Witness" Style="font-weight:bold;color:black" />
+                            <RadzenTextArea Name="WitnessDetail" @bind-Value=editPlan.WitnessDetail />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="WitnessDetail" Text="Witness is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Section Comment" Style="font-weight:bold;color:black" />
+                            <RadzenTextArea Name="SectionComment" @bind-Value=editPlan.SectionComment />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="SectionComment" Text="Section Comment is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <RadzenRow Gap="1rem">
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Team Comment" Style="font-weight:bold;color:black" />
+                            <RadzenTextArea Name="TeamComment" @bind-Value=editPlan.TeamComment />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="TeamComment" Text="Team Comment is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
+
+                    <RadzenColumn Size="6" SizeSM="6">
+                        <RadzenStack Gap="0.1rem">
+                            <RadzenLabel Text="Supervisor Review" Style="font-weight:bold;color:black" />
+                            <RadzenTextArea Name="SupervisorReview" @bind-Value=editPlan.SupervisorReview />
+                            <RadzenRequiredValidator Style="font-weight:bold" Component="SupervisorReview" Text="Supervisor Review is required" />
+                        </RadzenStack>
+                    </RadzenColumn>
                 </RadzenRow>
 
 
@@ -208,6 +402,15 @@
     List<Department> departments = new();
 
 
+    //add initative status
+
+    IList<InitiativeStatus> InitiativeStatusList = new List<InitiativeStatus>() {
+                new InitiativeStatus(){ InitiativeStatusID=1, InitiativeStatusName="INPROGRESS"},
+                new InitiativeStatus(){ InitiativeStatusID=2, InitiativeStatusName="DO"},
+                new InitiativeStatus(){ InitiativeStatusID=2, InitiativeStatusName="POSTPONED"},
+                                };
+
+
     private List<string> fileNames = new();
     private long maxFileSize = long.MaxValue;
     private int maxAllowedFiles = int.MaxValue;
@@ -252,7 +455,7 @@
 
         base.OnInitialized();
         plan = myStateContainer.PlanValue;
-        if (plan.PlanID>0)
+        if (plan.PlanID > 0)
         {
             editPlan.PlanID = plan.PlanID;
             editPlan.UserName = SessionName!;
@@ -262,6 +465,26 @@
             editPlan.DetailedId = plan.DetailedId;
             editPlan.ProgramScheduleId = plan.ProgramScheduleId;
             editPlan.Witness = plan.Witness;
+            editPlan.StraKeyPerfIndicators = plan.StraKeyPerfIndicators;
+            editPlan.KeyPerfIndicatorsEvaluation = plan.KeyPerfIndicatorsEvaluation;
+            editPlan.TargetGroup = plan.TargetGroup;
+            editPlan.Targeted = plan.Targeted;
+            editPlan.ActualPerformance = plan.ActualPerformance;
+            editPlan.ActImpSteps = plan.ActImpSteps;
+            editPlan.ExeActivityAnalysis = plan.ExeActivityAnalysis;
+            editPlan.EntityResponsible = plan.EntityResponsible;
+            editPlan.PartParties = plan.PartParties;
+            editPlan.ImpStartDate = plan.ImpStartDate;
+            editPlan.CompletionDate = plan.CompletionDate;
+            editPlan.ProposedCost = plan.ProposedCost;
+            editPlan.EstimatedCost = plan.EstimatedCost;
+            editPlan.ActualCost = plan.ActualCost;
+            editPlan.InitiativeStatus = plan.InitiativeStatus;
+            editPlan.Evidence = plan.Evidence;
+            editPlan.WitnessDetail = plan.WitnessDetail;
+            editPlan.SectionComment = plan.SectionComment;
+            editPlan.TeamComment = plan.TeamComment;
+            editPlan.SupervisorReview = plan.SupervisorReview;
         }
         else
         {
@@ -373,6 +596,12 @@
             if (string.IsNullOrEmpty(editPlan.UserName))
             {
                 ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all plan details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+            if (editPlan.WitnessName.Count == 0)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Atleast one file needs to be loaded to proceed.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
                 return;
             }
 

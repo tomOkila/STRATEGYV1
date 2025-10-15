@@ -193,9 +193,29 @@ namespace STRATEGY.WEBAPI.Contract
                 DetailedId = model.DetailedId,
                 ProgramScheduleId = model.ProgramScheduleId,
                 Witness = model.Witness,
+                StraKeyPerfIndicators = model.StraKeyPerfIndicators,
+                KeyPerfIndicatorsEvaluation = model.KeyPerfIndicatorsEvaluation,
+                TargetGroup = model.TargetGroup,
+                Targeted = model.Targeted,
+                ActualPerformance = model.ActualPerformance,
+                ActImpSteps = model.ActImpSteps,
+                ExeActivityAnalysis = model.ExeActivityAnalysis,
+                EntityResponsible = model.EntityResponsible,
+                PartParties = model.PartParties,
+                ImpStartDate = model.ImpStartDate,
+                CompletionDate = model.CompletionDate,
+                ProposedCost = model.ProposedCost,
+                EstimatedCost = model.EstimatedCost,
+                ActualCost = model.ActualCost,
+                InitiativeStatus = model.InitiativeStatus,
+                Evidence = model.Evidence,
+                WitnessDetail = model.WitnessDetail,
+                SectionComment = model.SectionComment,
+                TeamComment = model.TeamComment,
+                SupervisorReview = model.SupervisorReview,
                 CreateDate = DateTime.Now
             };
-
+            
             _appDbContext.Plans.Add(plandetails);
             await _appDbContext.SaveChangesAsync();
 
@@ -450,7 +470,28 @@ await _appDbContext.Pillars.ToListAsync();
                 response.DetailedTargetName = user.DetailedSO.DetailedTargetName;
                 response.ProgramScheduleId = user.ProgramSchedules.ProgramScheduleId;
                 response.ProgramRegistrarName = user.ProgramSchedules.ProgramRegistrarName;
-             
+                response.StraKeyPerfIndicators = user.Plans.StraKeyPerfIndicators;
+                response.KeyPerfIndicatorsEvaluation = user.Plans.KeyPerfIndicatorsEvaluation;
+                response.TargetGroup = user.Plans.TargetGroup;
+                response.Targeted = user.Plans.Targeted;
+                response.ActualPerformance = user.Plans.ActualPerformance;
+                response.ActImpSteps = user.Plans.ActImpSteps;
+                response.ExeActivityAnalysis = user.Plans.ExeActivityAnalysis;
+                response.EntityResponsible = user.Plans.EntityResponsible;
+                response.PartParties = user.Plans.PartParties;
+                response.ImpStartDate = user.Plans.ImpStartDate;
+                response.CompletionDate = user.Plans.CompletionDate;
+                response.ProposedCost = user.Plans.ProposedCost;
+                response.EstimatedCost = user.Plans.EstimatedCost;
+                response.ActualCost = user.Plans.ActualCost;
+                response.InitiativeStatus = user.Plans.InitiativeStatus;
+                response.Evidence = user.Plans.Evidence;
+                response.WitnessDetail = user.Plans.WitnessDetail;
+                response.SectionComment = user.Plans.SectionComment;
+                response.TeamComment = user.Plans.TeamComment;
+                response.SupervisorReview = user.Plans.SupervisorReview;
+
+
                 response1.Add(response);
             }
 
@@ -690,6 +731,28 @@ await _appDbContext.Pillars.ToListAsync();
                 strategicPlanResp.SOId = model.SOId;
                 strategicPlanResp.DetailedId = model.DetailedId;
                 strategicPlanResp.Witness = model.Witness;
+
+                strategicPlanResp.StraKeyPerfIndicators = model.StraKeyPerfIndicators;
+                strategicPlanResp.KeyPerfIndicatorsEvaluation = model.KeyPerfIndicatorsEvaluation;
+                strategicPlanResp.TargetGroup = model.TargetGroup;
+                strategicPlanResp.Targeted = model.Targeted;
+                strategicPlanResp.ActualPerformance = model.ActualPerformance;
+                strategicPlanResp.ActImpSteps = model.ActImpSteps;
+                strategicPlanResp.ExeActivityAnalysis = model.ExeActivityAnalysis;
+                strategicPlanResp.EntityResponsible = model.EntityResponsible;
+                strategicPlanResp.PartParties = model.PartParties;
+                strategicPlanResp.ImpStartDate = model.ImpStartDate;
+                strategicPlanResp.CompletionDate = model.CompletionDate;
+                strategicPlanResp.ProposedCost = model.ProposedCost;
+                strategicPlanResp.EstimatedCost = model.EstimatedCost;
+                strategicPlanResp.ActualCost = model.ActualCost;
+                strategicPlanResp.InitiativeStatus = model.InitiativeStatus;
+                strategicPlanResp.Evidence = model.Evidence;
+                strategicPlanResp.WitnessDetail = model.WitnessDetail;
+                strategicPlanResp.SectionComment = model.SectionComment;
+                strategicPlanResp.TeamComment = model.TeamComment;
+                strategicPlanResp.SupervisorReview = model.SupervisorReview;
+
                 strategicPlanResp.UpdatedBy = model.UpdatedBy;
                 strategicPlanResp.CreateDate = strategicPlanResp.CreateDate;
                 strategicPlanResp.UpdatedDate = DateTime.Now;
