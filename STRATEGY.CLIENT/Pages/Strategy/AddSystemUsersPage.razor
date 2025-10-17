@@ -274,11 +274,11 @@
     {
 
         //ensure the image is not empty
-        if (string.IsNullOrEmpty(appuser.ProfileImage))
-        {
-            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "The profile image cannot be passed as an empty string.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
-            return;
-        }
+        // if (string.IsNullOrEmpty(appuser.ProfileImage))
+        // {
+        //     ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "The profile image cannot be passed as an empty string.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+        //     return;
+        // }
 
         try
         {
