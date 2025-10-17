@@ -170,11 +170,11 @@ namespace STRATEGY.WEBAPI.Contract
             }
 
 
-            var response = await FindPlanByIDAsync(model.UserName);
-            if (response != null)
-            {
-                return new GeneralResponse(false, "Plan username already exists");
-            }
+            //var response = await FindPlanByIDAsync(model.UserName);
+            //if (response != null)
+            //{
+            //    return new GeneralResponse(false, "Plan username already exists");
+            //}
 
 
             //if (!string.IsNullOrEmpty(model.WitnessName))

@@ -12,41 +12,50 @@
     </div>
 
 </div>
-<RadzenButton Text="Create Plan" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+@if (PermissionCreate == true)
+{
+    <RadzenButton Text="Create Plan" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+}
 <RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
-                AllowAlternatingRows="false"
-                AllowSorting="true"
-                AllowMultiColumnSorting="true"
-                PageSize="5"
-                AllowPaging="true"
-                ShowPagingSummary="true"
-                SelectionMode="DataGridSelectionMode.Single"
-                @bind-Value=@selectedPlanResponse
-                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
-                Data="@planResponses"
-                EmptyText="No  plan to display at the moment"
-                TItem="PlanResponse" Style="margin:5px;">
+AllowAlternatingRows="false"
+AllowSorting="true"
+AllowMultiColumnSorting="true"
+PageSize="5"
+AllowPaging="true"
+ShowPagingSummary="true"
+SelectionMode="DataGridSelectionMode.Single"
+@bind-Value=@selectedPlanResponse
+FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+Data="@planResponses"
+EmptyText="No  plan to display at the moment"
+TItem="PlanResponse" Style="margin:5px;">
     <Columns>
         <RadzenDataGridColumn TItem="PlanResponse" Property="PlanID" Title="ID" Frozen="true" Width="20px" Visible="true" />
         <RadzenDataGridColumn TItem="PlanResponse" Property="UserName" Title="User Name" Width="60px" />
         <RadzenDataGridColumn TItem="PlanResponse" Property="PillarName" Title="Pillar Name" Width="60px" />
         <RadzenDataGridColumn Context="strategicPlanResponses"
-                              Filterable="false"
-                              Sortable="false"
-                              Width="60px"
-                              TextAlign="Radzen.TextAlign.Center"
-                              Frozen="true"
-                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
-                              Title="Actions">
+        Filterable="false"
+        Sortable="false"
+        Width="60px"
+        TextAlign="Radzen.TextAlign.Center"
+        Frozen="true"
+        FrozenPosition="Radzen.FrozenColumnPosition.Right"
+        Title="Actions">
             <Template Context="planResponses">
                 <RadzenButton Icon="visibility" ButtonStyle="Radzen.ButtonStyle.Info" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewClicked(planResponses))">
                 </RadzenButton>
-                <RadzenButton Icon="details" ButtonStyle="Radzen.ButtonStyle.Secondary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args => ViewImageClicked(planResponses))">
+                <RadzenButton Style="margin:2px;" Icon="details" ButtonStyle="Radzen.ButtonStyle.Secondary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args => ViewImageClicked(planResponses))">
                 </RadzenButton>
-                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(planResponses))">
-                </RadzenButton>
-                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>DeleteConfirmClicked(planResponses))">
-                </RadzenButton>
+                @if (PermissionUpdate == true)
+                {
+                    <RadzenButton Style="margin:2px;" Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(planResponses))">
+                    </RadzenButton>
+                }
+                @if (PermissionDelete == true)
+                {
+                    <RadzenButton Style="margin:2px;" Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>DeleteConfirmClicked(planResponses))">
+                    </RadzenButton>
+                }
             </Template>
         </RadzenDataGridColumn>
     </Columns>
@@ -56,6 +65,9 @@
     private string SessionEmail = string.Empty;
     private int SessionDepartmentID;
     private int UserId;
+    private bool PermissionCreate;
+    private bool PermissionUpdate;
+    private bool PermissionDelete;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
 
@@ -77,6 +89,10 @@
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
             SessionDepartmentID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname).Value);
+
+            PermissionCreate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value);
+            PermissionUpdate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Locality).Value);
+            PermissionDelete = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.StateOrProvince).Value);
             //load system roles
             await GetPlanResponse();
         }

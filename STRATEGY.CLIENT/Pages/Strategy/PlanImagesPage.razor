@@ -33,7 +33,7 @@
                     </RadzenColumn>
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
-                    
+
                     <RadzenColumn SizeSM="6">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Key Performance Indicators</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.StraKeyPerfIndicators</b></RadzenText>
@@ -48,7 +48,7 @@
                     </RadzenColumn>
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
-                    
+
                     <RadzenColumn SizeSM="6">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Actual Performance</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ActualPerformance</b></RadzenText>
@@ -69,7 +69,7 @@
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Proposed Cost</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.ProposedCost</b></RadzenText>
                     </RadzenColumn>
-             
+
                     <RadzenColumn SizeSM="6">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Initiative Status</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@InitiativeStatusList.Where(x=>x.InitiativeStatusID==editPlan.InitiativeStatus).FirstOrDefault().InitiativeStatusName</b></RadzenText>
@@ -78,7 +78,7 @@
                     </RadzenColumn>
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
-                    
+
                     <RadzenColumn SizeSM="6">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Estimated Cost</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.EstimatedCost</b></RadzenText>
@@ -94,7 +94,7 @@
                     </RadzenColumn>
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween">
-                    
+
                     <RadzenColumn SizeSM="6">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">WitnessDetail</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.WitnessDetail</b></RadzenText>
@@ -118,7 +118,7 @@
                             <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">DepartmentManager</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1"><b>@item.DepartmentManager</b></RadzenText>
                         }
-                    
+
                     </RadzenStack>
                 </RadzenStack>
             </RadzenCard>
@@ -195,18 +195,52 @@
                     </RadzenStack>
                 </RadzenStack>
             </RadzenCard>
+
+            @if (SessionRoleID == 4 || SessionRoleID == 5)
+            {
+                <RadzenTemplateForm TItem="Plan" Data=plan Submit="Save" InvalidSubmit="OnInvalidSubmit">
+                    <RadzenRow Gap="1rem">
+                        @if (SessionRoleID == 4)
+                        {
+                            <RadzenColumn Size="12" SizeSM="12">
+                                <RadzenStack Gap="0.1rem">
+                                    <RadzenLabel Text="Team Comment" Style="font-weight:bold;color:black" />
+                                    <RadzenTextArea Name="TeamComment" @bind-Value=plan.TeamComment />
+                                    <RadzenRequiredValidator Style="font-weight:bold" Component="TeamComment" Text="Team Comment is required" />
+                                </RadzenStack>
+                            </RadzenColumn>
+                        }
+
+                        @if (SessionRoleID == 5)
+                        {
+                            <RadzenColumn Size="12" SizeSM="12">
+                                <RadzenStack Gap="0.1rem">
+                                    <RadzenLabel Text="Supervisor Review" Style="font-weight:bold;color:black" />
+                                    <RadzenTextArea Name="SupervisorReview" @bind-Value=plan.SupervisorReview />
+                                    <RadzenRequiredValidator Style="font-weight:bold" Component="SupervisorReview" Text="Supervisor Review is required" />
+                                </RadzenStack>
+                            </RadzenColumn>
+                        }
+                    </RadzenRow>
+                    <RadzenButton Style="margin-top:20px;" Icon="save" ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+                </RadzenTemplateForm>
+            }
+         
+
+
         </RadzenTabsItem>
         <RadzenTabsItem Text="Documents">
             <div class="row">
                 <div class="rz-p-12 rz-text-align-center">
                     @foreach (var item in planDocuments)
                     {
+                       
                         <li><p><RadzenLink Path=@item.DocumentPath Style="width: 15rem;font-weight:bold;" Text=@item.DocumentName target="_blank" /></p></li><br />
                     }
                 </div>
             </div>
         </RadzenTabsItem>
-       
+
     </Tabs>
 </RadzenTabs>
 
@@ -217,6 +251,7 @@
     private string SessionEmail = string.Empty;
     private int SessionDepartmentID;
     private int UserId;
+    private int SessionRoleID;
     int selectedIndex = 0;
 
     [CascadingParameter]
@@ -228,6 +263,10 @@
 
     EditPlanDocument editPlan = new();
     List<EditPlanDocument> editPlans = new();
+
+    EditPlan editPlanComment = new();
+    List<EditPlan> editPlanComments = new();
+    private List<string> fileNames = new();
 
     PlanDocuments planDocument = new();
     List<PlanDocuments> planDocuments = new();
@@ -272,6 +311,7 @@
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            SessionRoleID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value);
             SessionDepartmentID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname).Value);
         }
         catch (Exception ex)
@@ -317,6 +357,8 @@
 
 
             editPlan.UpdatedBy = UserId;
+
+           
         }
         else
         {
@@ -330,5 +372,102 @@
         await GetStrategicObjectives();
         await GetDetailedStrategicObjectives();
         await GetProgramSchedule();
+
+
+    }
+
+
+    async Task Save()
+    {
+
+        editPlanComment.DepartmentID = SessionDepartmentID;
+        editPlanComment.UserName = SessionName;
+
+        
+        foreach (var item in planDocuments)
+        {
+            fileNames.Add(item.DocumentName);
+        }
+        editPlanComment.WitnessName = fileNames;
+        editPlanComment.UserName = editPlan.UserName;
+
+        editPlanComment.PlanID = editPlan.PlanID;
+        editPlanComment.PillarID = editPlan.PillarID;
+        editPlanComment.SOId = editPlan.SOId;
+        editPlanComment.DetailedId = editPlan.DetailedId;
+        editPlanComment.ProgramScheduleId = editPlan.ProgramScheduleId;
+        editPlanComment.Witness = "test";
+
+        editPlanComment.StraKeyPerfIndicators = editPlan.StraKeyPerfIndicators;
+        editPlanComment.KeyPerfIndicatorsEvaluation = editPlan.KeyPerfIndicatorsEvaluation;
+        editPlanComment.TargetGroup = editPlan.TargetGroup;
+        editPlanComment.Targeted = editPlan.Targeted;
+        editPlanComment.ActualPerformance = editPlan.ActualPerformance;
+        editPlanComment.ActImpSteps = editPlan.ActImpSteps;
+        editPlanComment.ExeActivityAnalysis = editPlan.ExeActivityAnalysis;
+        editPlanComment.EntityResponsible = editPlan.EntityResponsible;
+        editPlanComment.PartParties = editPlan.PartParties;
+        editPlanComment.ImpStartDate = editPlan.ImpStartDate;
+        editPlanComment.CompletionDate = editPlan.CompletionDate;
+        editPlanComment.ProposedCost = editPlan.ProposedCost;
+        editPlanComment.EstimatedCost = editPlan.EstimatedCost;
+        editPlanComment.ActualCost = editPlan.ActualCost;
+        editPlanComment.InitiativeStatus = editPlan.InitiativeStatus;
+        editPlanComment.Evidence = editPlan.Evidence;
+        editPlanComment.WitnessDetail = editPlan.WitnessDetail;
+        editPlanComment.SectionComment = editPlan.SectionComment;
+        editPlanComment.TeamComment = plan.TeamComment;
+        editPlanComment.SupervisorReview = plan.SupervisorReview;
+
+        try
+        {
+            if (string.IsNullOrEmpty(editPlanComment.UserName))
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Please supply all plan details before proceeding.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+
+            // if (editPlanComment.WitnessName.Count == 0)
+            // {
+            //     ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Atleast one file needs to be loaded to proceed.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            //     return;
+            // }
+
+
+            var response = new GeneralResponse(false, null!);
+            if (editPlanComment.PlanID > 0)
+                response = await strategyService.UpdatePlanAsync(editPlanComment);
+            else
+                response = await strategyService.CreatePlanAsync(editPlanComment);
+
+            if (!response.Flag)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                return;
+            }
+            else
+            {
+                DialogService1.Close();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+                Navmanager.NavigateTo("theplan");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = ex.ToString(), Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            return;
+        }
+
+
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"InvalidSubmit: {JsonSerializer.Serialize(args, new JsonSerializerOptions() { WriteIndented = true })}", Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
+    void ShowNotification(Radzen.NotificationMessage message)
+    {
+        NotificationService.Notify(message);
     }
 }

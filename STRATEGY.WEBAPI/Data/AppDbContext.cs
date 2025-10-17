@@ -33,14 +33,18 @@ namespace STRATEGY.WEBAPI.Data
            modelBuilder.Entity<Permissions>().HasData(
                new Permissions { PermissionId = 1, PermissionName = "Admin", Create = true, Update = true, Delete = true, CreateDate=DateTime.Now,UpdatedBy=0, UpdatedDate=DateTime.Now },
                new Permissions { PermissionId = 2, PermissionName = "User", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
-               new Permissions { PermissionId = 3, PermissionName = "Visitor", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
+               new Permissions { PermissionId = 3, PermissionName = "Visitor", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+               new Permissions { PermissionId = 4, PermissionName = "Team", Create = true, Update = true, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+               new Permissions { PermissionId = 5, PermissionName = "Pteam", Create = true, Update = true, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
             );
 
             //roles
             modelBuilder.Entity<AppRoles>().HasData(
              new AppRoles { Id = 1, RoleName = "Admin",CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
              new AppRoles { Id = 2, RoleName = "User", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
-             new AppRoles { Id = 3, RoleName = "Visitor", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
+             new AppRoles { Id = 3, RoleName = "Visitor", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+             new AppRoles { Id = 4, RoleName = "Team", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+             new AppRoles { Id = 5, RoleName = "Pteam", CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
             );
 
 

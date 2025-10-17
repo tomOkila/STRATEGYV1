@@ -12,40 +12,48 @@
     </div>
 
 </div>
-
-<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+@if (PermissionCreate == true)
+{
+    <RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+}
 <RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
-                AllowAlternatingRows="false"
-                AllowSorting="true"
-                AllowMultiColumnSorting="true"
-                PageSize="5"
-                AllowPaging="true"
-                ShowPagingSummary="true"
-                SelectionMode="DataGridSelectionMode.Single"
-                @bind-Value=@selectedProgramSchedules
-                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
-                Data="@programSchedules"
-                EmptyText="No program schedule to display at the moment"
-                TItem="ProgramSchedule" Style="margin:5px;">
+AllowAlternatingRows="false"
+AllowSorting="true"
+AllowMultiColumnSorting="true"
+PageSize="5"
+AllowPaging="true"
+ShowPagingSummary="true"
+SelectionMode="DataGridSelectionMode.Single"
+@bind-Value=@selectedProgramSchedules
+FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+Data="@programSchedules"
+EmptyText="No program schedule to display at the moment"
+TItem="ProgramSchedule" Style="margin:5px;">
     <Columns>
         <RadzenDataGridColumn TItem="ProgramSchedule" Property="ProgramScheduleId" Title="ID" Frozen="true" Width="20px" Visible="true" />
         <RadzenDataGridColumn TItem="ProgramSchedule" Property="ProgramRegistrarName" Title="RegistrarName" Width="60px" />
         <RadzenDataGridColumn TItem="ProgramSchedule" Property="DetailedSO.DetailedTargetName" Title="DetailedTargetName" Width="60px" />
         <RadzenDataGridColumn Context="programSchedules"
-                              Filterable="false"
-                              Sortable="false"
-                              Width="60px"
-                              TextAlign="Radzen.TextAlign.Center"
-                              Frozen="true"
-                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
-                              Title="Actions">
+        Filterable="false"
+        Sortable="false"
+        Width="60px"
+        TextAlign="Radzen.TextAlign.Center"
+        Frozen="true"
+        FrozenPosition="Radzen.FrozenColumnPosition.Right"
+        Title="Actions">
             <Template Context="programSchedules">
                 <RadzenButton Icon="visibility" ButtonStyle="Radzen.ButtonStyle.Info" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewClicked(programSchedules))">
                 </RadzenButton>
-                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(programSchedules))">
-                </RadzenButton>
-                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(programSchedules))">
-                </RadzenButton>
+                @if (PermissionUpdate == true)
+                {
+                    <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(programSchedules))">
+                    </RadzenButton>
+                }
+                @if (PermissionDelete == true)
+                {
+                    <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(programSchedules))">
+                    </RadzenButton>
+                }
             </Template>
         </RadzenDataGridColumn>
     </Columns>
@@ -57,6 +65,9 @@
     private string SessionEmail = string.Empty;
     private string CreateEditTitle = string.Empty;
     private int UserId;
+    private bool PermissionCreate;
+    private bool PermissionUpdate;
+    private bool PermissionDelete;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
 
@@ -82,6 +93,9 @@
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            PermissionCreate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value);
+            PermissionUpdate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Locality).Value);
+            PermissionDelete = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.StateOrProvince).Value);
 
             await GetProgramSchedules();
             await GetDetailedStrategicObjectives();

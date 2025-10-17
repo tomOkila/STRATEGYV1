@@ -339,7 +339,7 @@
                     </RadzenColumn>
                 </RadzenRow>
 
-                <RadzenRow Gap="1rem">
+              @*   <RadzenRow Gap="1rem">
                     <RadzenColumn Size="6" SizeSM="6">
                         <RadzenStack Gap="0.1rem">
                             <RadzenLabel Text="Team Comment" Style="font-weight:bold;color:black" />
@@ -355,7 +355,7 @@
                             <RadzenRequiredValidator Style="font-weight:bold" Component="SupervisorReview" Text="Supervisor Review is required" />
                         </RadzenStack>
                     </RadzenColumn>
-                </RadzenRow>
+                </RadzenRow> *@
 
 
                 <RadzenButton Style="margin-top:20px;" Icon="save" ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
@@ -599,11 +599,11 @@
                 return;
             }
 
-            if (editPlan.WitnessName.Count == 0)
-            {
-                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Atleast one file needs to be loaded to proceed.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
-                return;
-            }
+            // if (editPlan.WitnessName.Count == 0)
+            // {
+            //     ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = $"Atleast one file needs to be loaded to proceed.", Detail = "", Duration = 7000, CloseOnClick = true, Payload = DateTime.Now });
+            //     return;
+            // }
 
 
             var response = new GeneralResponse(false, null!);

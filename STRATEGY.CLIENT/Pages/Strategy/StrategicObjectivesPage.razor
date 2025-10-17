@@ -12,40 +12,48 @@
     </div>
 
 </div>
-
-<RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+@if (PermissionCreate == true)
+{
+    <RadzenButton Text="Create" Click="CreateClicked" Icon="add" ButtonStyle="Radzen.ButtonStyle.Primary" Size="Radzen.ButtonSize.Small" Style="margin:10px;margin-left:5px;" />
+}
 <RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
-                AllowAlternatingRows="false"
-                AllowSorting="true"
-                AllowMultiColumnSorting="true"
-                PageSize="5"
-                AllowPaging="true"
-                ShowPagingSummary="true"
-                SelectionMode="DataGridSelectionMode.Single"
-                @bind-Value=@selectedStrategicObjective
-                FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
-                Data="@strategicObjectives"
-                EmptyText="No strategic objective to display at the moment"
-                TItem="StrategicObjective" Style="margin:5px;">
+AllowAlternatingRows="false"
+AllowSorting="true"
+AllowMultiColumnSorting="true"
+PageSize="5"
+AllowPaging="true"
+ShowPagingSummary="true"
+SelectionMode="DataGridSelectionMode.Single"
+@bind-Value=@selectedStrategicObjective
+FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+Data="@strategicObjectives"
+EmptyText="No strategic objective to display at the moment"
+TItem="StrategicObjective" Style="margin:5px;">
     <Columns>
         <RadzenDataGridColumn TItem="StrategicObjective" Property="SOId" Title="ID" Frozen="true" Width="20px" Visible="true" />
         <RadzenDataGridColumn TItem="StrategicObjective" Property="TargetName" Title="Name" Width="60px" />
         <RadzenDataGridColumn TItem="StrategicObjective" Property="Pillars.PillarName" Title="PillarName" Width="60px" />
         <RadzenDataGridColumn Context="strategicObjectives"
-                              Filterable="false"
-                              Sortable="false"
-                              Width="60px"
-                              TextAlign="Radzen.TextAlign.Center"
-                              Frozen="true"
-                              FrozenPosition="Radzen.FrozenColumnPosition.Right"
-                              Title="Actions">
+        Filterable="false"
+        Sortable="false"
+        Width="60px"
+        TextAlign="Radzen.TextAlign.Center"
+        Frozen="true"
+        FrozenPosition="Radzen.FrozenColumnPosition.Right"
+        Title="Actions">
             <Template Context="strategicObjectives">
                 <RadzenButton Icon="visibility" ButtonStyle="Radzen.ButtonStyle.Info" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewClicked(strategicObjectives))">
                 </RadzenButton>
-                <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(strategicObjectives))">
-                </RadzenButton>
-                <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(strategicObjectives))">
-                </RadzenButton>
+                @if (PermissionUpdate == true)
+                {
+                    <RadzenButton Icon="edit" ButtonStyle="Radzen.ButtonStyle.Primary" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>EditClicked(strategicObjectives))">
+                    </RadzenButton>
+                }
+                @if (PermissionDelete == true)
+                {
+                    <RadzenButton Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args =>ViewDeleteClicked(strategicObjectives))">
+                    </RadzenButton>
+                }
             </Template>
         </RadzenDataGridColumn>
     </Columns>
@@ -56,6 +64,9 @@
     private string SessionName = string.Empty;
     private string SessionEmail = string.Empty;
     private string CreateEditTitle = string.Empty;
+    private bool PermissionCreate;
+    private bool PermissionUpdate;
+    private bool PermissionDelete;
     private int UserId;
     [CascadingParameter]
     public Task<AuthenticationState>? ClientAuthState { get; set; }
@@ -82,6 +93,10 @@
             SessionName = user.Identity.Name;
             SessionEmail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             UserId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
+            PermissionCreate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Country).Value);
+            PermissionUpdate = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Locality).Value);
+            PermissionDelete = Convert.ToBoolean(user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.StateOrProvince).Value);
 
             //load system roles
             await GetStrategicObjectives();

@@ -51,26 +51,42 @@ namespace STRATEGY.WEBAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6057),
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4182),
                             RoleName = "Admin",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6058)
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4183)
                         },
                         new
                         {
                             Id = 2,
-                            CreateDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6060),
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4186),
                             RoleName = "User",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6061)
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4186)
                         },
                         new
                         {
                             Id = 3,
-                            CreateDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6062),
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4188),
                             RoleName = "Visitor",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6062)
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4189)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4190),
+                            RoleName = "Team",
+                            UpdatedBy = 0,
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4191)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4193),
+                            RoleName = "Pteam",
+                            UpdatedBy = 0,
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4194)
                         });
                 });
 
@@ -148,11 +164,11 @@ namespace STRATEGY.WEBAPI.Migrations
                         new
                         {
                             DepartmentId = 1,
-                            CreateDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6084),
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4232),
                             DepartmentManager = "Head IT",
                             DepartmentName = "IT Department",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(6085)
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4233)
                         });
                 });
 
@@ -280,34 +296,56 @@ namespace STRATEGY.WEBAPI.Migrations
                         {
                             PermissionId = 1,
                             Create = true,
-                            CreateDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(5904),
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3971),
                             Delete = true,
                             PermissionName = "Admin",
                             Update = true,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(5922)
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3988)
                         },
                         new
                         {
                             PermissionId = 2,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(5923),
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3991),
                             Delete = false,
                             PermissionName = "User",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(5924)
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3992)
                         },
                         new
                         {
                             PermissionId = 3,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(5925),
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3994),
                             Delete = false,
                             PermissionName = "Visitor",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 15, 8, 51, 7, 685, DateTimeKind.Local).AddTicks(5925)
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3994)
+                        },
+                        new
+                        {
+                            PermissionId = 4,
+                            Create = true,
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3996),
+                            Delete = false,
+                            PermissionName = "Team",
+                            Update = true,
+                            UpdatedBy = 0,
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3997)
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            Create = true,
+                            CreateDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(3999),
+                            Delete = false,
+                            PermissionName = "Pteam",
+                            Update = true,
+                            UpdatedBy = 0,
+                            UpdatedDate = new DateTime(2025, 10, 17, 12, 40, 2, 128, DateTimeKind.Local).AddTicks(4000)
                         });
                 });
 
