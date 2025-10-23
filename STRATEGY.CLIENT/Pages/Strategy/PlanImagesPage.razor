@@ -230,7 +230,7 @@
 
         </RadzenTabsItem>
         <RadzenTabsItem Text="Documents">
-            <div class="row">
+        @*     <div class="row">
                 <div class="rz-p-12 rz-text-align-center">
                     @foreach (var item in planDocuments)
                     {
@@ -238,7 +238,43 @@
                         <li><p><RadzenLink Path=@item.DocumentPath Style="width: 15rem;font-weight:bold;" Text=@item.DocumentName target="_blank" /></p></li><br />
                     }
                 </div>
-            </div>
+            </div> *@
+            @* <li><p><RadzenLink Path=@item.DocumentPath Style="width: 15rem;font-weight:bold;" Text=@item.DocumentName target="_blank" /></p></li><br /> *@
+            <RadzenDataGrid id="mytable" AllowFiltering="true" AllowColumnResize="true"
+                            AllowAlternatingRows="false"
+                            AllowSorting="true"
+                            AllowMultiColumnSorting="true"
+                            PageSize="5"
+                            Data="@planDocuments"
+                            AllowPaging="true"
+                            ShowPagingSummary="true"
+                            SelectionMode="DataGridSelectionMode.Single"
+                            FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive"
+                            EmptyText="No plan documents to display at the moment"
+                            TItem="PlanDocuments" Style="margin:5px;">
+                <Columns>
+                    <RadzenDataGridColumn TItem="PlanDocuments" Property="PlanDocumentId" Title="ID" Frozen="true" Width="30px" Visible="true" />
+                    <RadzenDataGridColumn TItem="PlanDocuments" Property="DocumentName" Title="Name" Width="70px" />
+                    <RadzenDataGridColumn TItem="PlanDocuments" Title="Details Link">
+                        <Template Context="item">
+                            <RadzenLink Path=@item.DocumentPath Style="width: 15rem;font-weight:bold;" Text=@item.DocumentName target="_blank" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn Context="planDocuments"
+                                          Filterable="false"
+                                          Sortable="false"
+                                          Width="70px"
+                                          TextAlign="Radzen.TextAlign.Center"
+                                          Frozen="true"
+                                          FrozenPosition="Radzen.FrozenColumnPosition.Right"
+                                          Title="Actions">
+                        <Template Context="PlanDocuments">
+                            <RadzenButton Style="margin:5px;" Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteClicked(PlanDocuments))">
+                            </RadzenButton>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
         </RadzenTabsItem>
 
     </Tabs>
@@ -460,6 +496,19 @@
 
 
     }
+
+
+    public int DeleteId { get; set; }
+    private async Task DeleteClicked(PlanDocuments model)
+    {
+        var response = await strategyService.DeletePlanDocumentAsync(model);
+        await GetPlanDocuments();
+        DeleteId = 0;
+        StateHasChanged();
+        DialogService1.Close();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 8000, CloseOnClick = true, Payload = DateTime.Now });
+    }
+
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
     {

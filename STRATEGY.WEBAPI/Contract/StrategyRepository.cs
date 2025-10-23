@@ -381,6 +381,24 @@ namespace STRATEGY.WEBAPI.Contract
             return new GeneralResponse(true, "Plan Deleted Successfully");
         }
 
+
+        public async Task<GeneralResponse> DeletePlanDocumentAsync(PlanDocuments model)
+        {
+            var docPath = _config.GetConnectionString("PLAN_UPLOADFILE_PATH") + model.DocumentName;
+            //remove document from folder
+            if (File.Exists(docPath))
+            {
+                File.Delete(docPath);
+            }
+
+            var respDetail = await _appDbContext.PlanDocuments.FindAsync(model.PlanDocumentId);
+            if (respDetail == null)
+                return new GeneralResponse(false, "Plan not found");
+            _appDbContext.PlanDocuments.Remove(respDetail);
+            await _appDbContext.SaveChangesAsync();
+            return new GeneralResponse(true, "Plan Document Deleted Successfully");
+        }
+
         public async Task<List<Department>> GetDepartmentAsync() =>
 await _appDbContext.Departments.ToListAsync();
 

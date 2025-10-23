@@ -1093,5 +1093,39 @@ namespace STRATEGY.CLIENT.Services
                 throw new Exception($"Error: {ex.Message}");
             }
         }
+
+
+
+        public async Task<GeneralResponse> DeletePlanDocumentAsync(PlanDocuments model)
+        {
+            try
+            {
+                var privateClient = await validateHttpClient.GetSecuredHttpClient();
+                var response = await privateClient.PostAsJsonAsync($"api/Strategy/deletePlanDocument", model);
+                //chcek if the token has expired
+                bool checkResponseIfUnAuthorized = CheckResponse(response);
+                if (!checkResponseIfUnAuthorized)
+                {
+                    string error = CheckResponseStatus(response);
+                    if (!string.IsNullOrEmpty(error))
+                        throw new Exception(error);
+
+                    var result = await response.Content.ReadFromJsonAsync<GeneralResponse>();
+                    return result!;
+                }
+                else
+                {
+                    if (!await RequestAndSetNewToken(model.UpdatedBy))
+                        return null!;
+                    else
+                        return await DeletePlanDocumentAsync(model);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
+            }
+        }
     }
 }

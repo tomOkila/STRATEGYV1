@@ -47,5 +47,6 @@ namespace STRATEGY.WEBAPI.Contract
         Task<List<PlanDocuments>> GetPlanDocumentsAsync(EditPlanDocument model);
         Task<GeneralResponse> UpdatePlanAsync(EditPlan model);
         Task<GeneralResponse> DeletePlanAsync(Plan model);
+        Task<GeneralResponse> DeletePlanDocumentAsync(PlanDocuments model);
     }
 }
