@@ -778,9 +778,9 @@ await _appDbContext.Pillars.ToListAsync();
 
 
                 //delete existing documents
-                _appDbContext.PlanDocuments
-               .Where(e => e.PlanID == model.PlanID)
-               .ExecuteDelete();
+               // _appDbContext.PlanDocuments
+               //.Where(e => e.PlanID == model.PlanID)
+               //.ExecuteDelete();
 
                 //add plan document
                 if (model.WitnessName.Count > 0)

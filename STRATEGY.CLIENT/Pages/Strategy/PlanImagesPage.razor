@@ -269,7 +269,7 @@
                                           FrozenPosition="Radzen.FrozenColumnPosition.Right"
                                           Title="Actions">
                         <Template Context="PlanDocuments">
-                            <RadzenButton Style="margin:5px;" Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args => DeleteClicked(PlanDocuments))">
+                            <RadzenButton Style="margin:5px;" Icon="delete" ButtonStyle="Radzen.ButtonStyle.Danger" Variant="Radzen.Variant.Flat" Size="Radzen.ButtonSize.Small" Click="@(args => ViewDeleteClicked(PlanDocuments))">
                             </RadzenButton>
                         </Template>
                     </RadzenDataGridColumn>
@@ -497,6 +497,28 @@
 
     }
 
+
+    private void ViewDeleteClicked(PlanDocuments incoPlanDocuments)
+    {
+        planDocument = incoPlanDocuments;
+        ShowInlineDeleteTaskDialog();
+    }
+
+
+    async Task ShowInlineDeleteTaskDialog()
+    {
+        var result = await DialogService1.OpenAsync("Delete Plan Document? ", ds =>
+    @<RadzenStack Gap="0.1rem">
+    <p style="font-size:20px;">Name: <b>@planDocument.DocumentName</b></p>
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenButton Text="Delete" Icon="delete" ButtonStyle="ButtonStyle.Secondary" Click="@(args => DeleteClicked(planDocument))" />
+            <RadzenButton Text="Cancel" Click="() => ds.Close(false)" Icon="cancel" ButtonStyle="ButtonStyle.Primary" />
+        </RadzenStack>
+    </RadzenStack>
+</RadzenStack>
+    );
+    }
 
     public int DeleteId { get; set; }
     private async Task DeleteClicked(PlanDocuments model)

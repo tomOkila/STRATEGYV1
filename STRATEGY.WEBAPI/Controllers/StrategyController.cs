@@ -223,5 +223,12 @@ namespace STRATEGY.WEBAPI.Controllers
             var result = await strategy.DeletePlanAsync(model);
             return Ok(result);
         }
+
+        [HttpPost("deletePlanDocument")]
+        public async Task<IActionResult> DeletePlanDocumentAsync(PlanDocuments model)
+        {
+            var result = await strategy.DeletePlanDocumentAsync(model);
+            return Ok(result);
+        }
     }
 }
