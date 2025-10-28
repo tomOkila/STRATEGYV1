@@ -362,7 +362,7 @@
         if (plan.PlanID > 0)
         {
             editPlan.PlanID = plan.PlanID;
-            editPlan.UserName = SessionName!;
+            editPlan.UserName = plan.UserName;
             editPlan.DepartmentID = plan.DepartmentID;
             editPlan.PillarID = plan.PillarID;
             editPlan.SOId = plan.SOId;
@@ -528,7 +528,7 @@
         DeleteId = 0;
         StateHasChanged();
         DialogService1.Close();
-        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 8000, CloseOnClick = true, Payload = DateTime.Now });
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 8000, CloseOnClick = true, Payload = DateTime.Now });
     }
 
 

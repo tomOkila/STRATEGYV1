@@ -34,8 +34,8 @@ namespace STRATEGY.WEBAPI.Data
                new Permissions { PermissionId = 1, PermissionName = "Admin", Create = true, Update = true, Delete = true, CreateDate=DateTime.Now,UpdatedBy=0, UpdatedDate=DateTime.Now },
                new Permissions { PermissionId = 2, PermissionName = "User", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
                new Permissions { PermissionId = 3, PermissionName = "Visitor", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
-               new Permissions { PermissionId = 4, PermissionName = "Team", Create = true, Update = true, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
-               new Permissions { PermissionId = 5, PermissionName = "Pteam", Create = true, Update = true, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
+               new Permissions { PermissionId = 4, PermissionName = "Team", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now },
+               new Permissions { PermissionId = 5, PermissionName = "Pteam", Create = false, Update = false, Delete = false, CreateDate = DateTime.Now, UpdatedBy = 0, UpdatedDate = DateTime.Now }
             );
 
             //roles

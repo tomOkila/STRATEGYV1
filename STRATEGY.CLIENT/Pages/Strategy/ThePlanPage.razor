@@ -13,7 +13,7 @@
 
 </div>
 
-@if (SessionRoleID==1)
+@if (SessionRoleID == 1 || SessionRoleID == 4 || SessionRoleID == 5)
 {
     @if (PermissionCreate == true)
     {
@@ -35,7 +35,7 @@
         <Columns>
             <RadzenDataGridColumn TItem="PlanResponse" Property="PlanID" Title="ID" Frozen="true" Width="20px" Visible="true" />
             <RadzenDataGridColumn TItem="PlanResponse" Property="UserName" Title="User Name" Width="60px" />
-            <RadzenDataGridColumn TItem="PlanResponse" Property="PillarName" Title="Pillar Name" Width="60px" />
+            <RadzenDataGridColumn TItem="PlanResponse" Property="ProgramRegistrarName" Title="Program" Width="60px" />
             <RadzenDataGridColumn Context="strategicPlanResponses"
                                   Filterable="false"
                                   Sortable="false"
@@ -86,7 +86,7 @@ else
         <Columns>
             <RadzenDataGridColumn TItem="PlanResponse" Property="PlanID" Title="ID" Frozen="true" Width="20px" Visible="true" />
             <RadzenDataGridColumn TItem="PlanResponse" Property="UserName" Title="User Name" Width="60px" />
-            <RadzenDataGridColumn TItem="PlanResponse" Property="PillarName" Title="Pillar Name" Width="60px" />
+            <RadzenDataGridColumn TItem="PlanResponse" Property="ProgramRegistrarName" Title="Program" Width="60px" />
             <RadzenDataGridColumn Context="strategicPlanResponses"
                                   Filterable="false"
                                   Sortable="false"
