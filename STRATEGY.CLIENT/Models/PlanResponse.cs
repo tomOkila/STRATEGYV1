@@ -36,6 +36,8 @@
         public string SectionComment { get; set; } = string.Empty;
         public string TeamComment { get; set; } = string.Empty;
         public string SupervisorReview { get; set; } = string.Empty;
+        public bool StrategicObjectivesVisibility { get; set; }
+        public bool DetailedStrategicObjectivesVisibility { get; set; }
 
         public DateTime CreateDate { get; set; }
         public int UpdatedBy { get; set; }

@@ -508,7 +508,8 @@ await _appDbContext.Pillars.ToListAsync();
                 response.SectionComment = user.Plans.SectionComment;
                 response.TeamComment = user.Plans.TeamComment;
                 response.SupervisorReview = user.Plans.SupervisorReview;
-
+                response.StrategicObjectivesVisibility = Convert.ToBoolean(user.Plans.StrategicObjectivesVisibility);
+                response.DetailedStrategicObjectivesVisibility = Convert.ToBoolean(user.Plans.DetailedStrategicObjectivesVisibility);
 
                 response1.Add(response);
             }
@@ -770,6 +771,8 @@ await _appDbContext.Pillars.ToListAsync();
                 strategicPlanResp.SectionComment = model.SectionComment;
                 strategicPlanResp.TeamComment = model.TeamComment;
                 strategicPlanResp.SupervisorReview = model.SupervisorReview;
+                strategicPlanResp.StrategicObjectivesVisibility = model.StrategicObjectivesVisibility;
+                strategicPlanResp.DetailedStrategicObjectivesVisibility = model.DetailedStrategicObjectivesVisibility;
 
                 strategicPlanResp.UpdatedBy = model.UpdatedBy;
                 strategicPlanResp.CreateDate = strategicPlanResp.CreateDate;

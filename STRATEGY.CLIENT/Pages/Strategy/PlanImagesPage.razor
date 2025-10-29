@@ -72,7 +72,7 @@
 
                     <RadzenColumn SizeSM="6">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Initiative Status</RadzenText>
-                        <RadzenText TextStyle="TextStyle.Body1"><b>@InitiativeStatusList.Where(x=>x.InitiativeStatusID==editPlan.InitiativeStatus).FirstOrDefault().InitiativeStatusName</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@InitiativeStatusList.Where(x => x.InitiativeStatusID == editPlan.InitiativeStatus).FirstOrDefault().InitiativeStatusName</b></RadzenText>
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Evidence</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@editPlan.Evidence</b></RadzenText>
                     </RadzenColumn>
@@ -146,12 +146,20 @@
                     <RadzenStack Gap="0">
                         @foreach (var item in strategicObjectives.Where(x => x.SOId == editPlan.SOId))
                         {
-                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">StrategicID</RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.SOId</b></RadzenText>
+                            @if (editPlan.StrategicObjectivesVisibility == true)
+                            {
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">StrategicID</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1"><b>@item.SOId</b></RadzenText>
+                            }
+
                             <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">TargetName</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1"><b>@item.TargetName</b></RadzenText>
-                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">GoalScorerName</RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.GoalScorerName</b></RadzenText>
+                            
+                            @if (editPlan.StrategicObjectivesVisibility == true)
+                            {
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">GoalScorerName</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1"><b>@item.GoalScorerName</b></RadzenText>
+                            }
                         }
 
                     </RadzenStack>
@@ -164,14 +172,25 @@
                     <RadzenStack Gap="0">
                         @foreach (var item in detailedSOs.Where(x => x.DetailedId == editPlan.DetailedId))
                         {
-                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">DetailedStrategicID</RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedId</b></RadzenText>
+                            @if (editPlan.DetailedStrategicObjectivesVisibility==true)
+                            {
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">DetailedStrategicID</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedId</b></RadzenText>
+                            }
+
+                         
                             <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Detailed TargetName</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedTargetName</b></RadzenText>
+                            
+                          
                             <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Detailed TargetHistory</RadzenText>
                             <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedTargetHistory</b></RadzenText>
-                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Detailed ScorerName</RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedScorerName</b></RadzenText>
+
+                            @if (editPlan.DetailedStrategicObjectivesVisibility == true)
+                            {
+                                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Detailed ScorerName</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1"><b>@item.DetailedScorerName</b></RadzenText>
+                            }
                         }
 
                     </RadzenStack>
@@ -225,12 +244,12 @@
                     <RadzenButton Style="margin-top:20px;" Icon="save" ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
                 </RadzenTemplateForm>
             }
-         
+
 
 
         </RadzenTabsItem>
         <RadzenTabsItem Text="Documents">
-        @*     <div class="row">
+            @*     <div class="row">
                 <div class="rz-p-12 rz-text-align-center">
                     @foreach (var item in planDocuments)
                     {
@@ -390,11 +409,13 @@
             editPlan.SectionComment = plan.SectionComment;
             editPlan.TeamComment = plan.TeamComment;
             editPlan.SupervisorReview = plan.SupervisorReview;
+            editPlan.StrategicObjectivesVisibility = plan.StrategicObjectivesVisibility;
+            editPlan.DetailedStrategicObjectivesVisibility = plan.DetailedStrategicObjectivesVisibility;
 
 
             editPlan.UpdatedBy = UserId;
 
-           
+
         }
         else
         {
@@ -419,7 +440,7 @@
         editPlanComment.DepartmentID = SessionDepartmentID;
         editPlanComment.UserName = SessionName;
 
-        
+
         foreach (var item in planDocuments)
         {
             fileNames.Add(item.DocumentName);

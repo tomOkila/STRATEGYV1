@@ -339,23 +339,29 @@
                     </RadzenColumn>
                 </RadzenRow>
 
-              @*   <RadzenRow Gap="1rem">
+                <RadzenRow Gap="1rem">
                     <RadzenColumn Size="6" SizeSM="6">
-                        <RadzenStack Gap="0.1rem">
-                            <RadzenLabel Text="Team Comment" Style="font-weight:bold;color:black" />
-                            <RadzenTextArea Name="TeamComment" @bind-Value=editPlan.TeamComment />
-                            <RadzenRequiredValidator Style="font-weight:bold" Component="TeamComment" Text="Team Comment is required" />
-                        </RadzenStack>
+                        <RadzenFormField Text="Strategic Objectives  Visibility" Variant="Variant.Outlined">
+                            <RadzenRadioButtonList @bind-Value=editPlan.StrategicObjectivesVisibility TValue="bool" class="rz-m-8 rz-mt-12">
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="True" Value="true" />
+                                    <RadzenRadioButtonListItem Text="False" Value="false" />
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </RadzenFormField>
                     </RadzenColumn>
 
                     <RadzenColumn Size="6" SizeSM="6">
-                        <RadzenStack Gap="0.1rem">
-                            <RadzenLabel Text="Supervisor Review" Style="font-weight:bold;color:black" />
-                            <RadzenTextArea Name="SupervisorReview" @bind-Value=editPlan.SupervisorReview />
-                            <RadzenRequiredValidator Style="font-weight:bold" Component="SupervisorReview" Text="Supervisor Review is required" />
-                        </RadzenStack>
+                            <RadzenFormField Text="Detailed  Objectives  Visibility" Variant="Variant.Outlined">
+                            <RadzenRadioButtonList @bind-Value=editPlan.DetailedStrategicObjectivesVisibility TValue="bool" class="rz-m-8 rz-mt-12">
+                                    <Items>
+                                        <RadzenRadioButtonListItem Text="True" Value="true" />
+                                        <RadzenRadioButtonListItem Text="False" Value="false" />
+                                    </Items>
+                                </RadzenRadioButtonList>
+                            </RadzenFormField>
                     </RadzenColumn>
-                </RadzenRow> *@
+                </RadzenRow>
 
 
                 <RadzenButton Style="margin-top:20px;" Icon="save" ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
@@ -485,6 +491,8 @@
             editPlan.SectionComment = plan.SectionComment;
             editPlan.TeamComment = plan.TeamComment;
             editPlan.SupervisorReview = plan.SupervisorReview;
+            editPlan.StrategicObjectivesVisibility = plan.StrategicObjectivesVisibility;
+            editPlan.DetailedStrategicObjectivesVisibility = plan.DetailedStrategicObjectivesVisibility;
         }
         else
         {

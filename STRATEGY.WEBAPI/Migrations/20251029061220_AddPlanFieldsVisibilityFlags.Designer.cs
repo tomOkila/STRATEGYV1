@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using STRATEGY.WEBAPI.Data;
 
@@ -11,9 +12,11 @@ using STRATEGY.WEBAPI.Data;
 namespace STRATEGY.WEBAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251029061220_AddPlanFieldsVisibilityFlags")]
+    partial class AddPlanFieldsVisibilityFlags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,42 +54,42 @@ namespace STRATEGY.WEBAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7448),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2359),
                             RoleName = "Admin",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7449)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2361)
                         },
                         new
                         {
                             Id = 2,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7451),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2365),
                             RoleName = "User",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7452)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2367)
                         },
                         new
                         {
                             Id = 3,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7454),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2370),
                             RoleName = "Visitor",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7455)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2372)
                         },
                         new
                         {
                             Id = 4,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7456),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2375),
                             RoleName = "Team",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7457)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2377)
                         },
                         new
                         {
                             Id = 5,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7458),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2379),
                             RoleName = "Pteam",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7459)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2381)
                         });
                 });
 
@@ -164,11 +167,11 @@ namespace STRATEGY.WEBAPI.Migrations
                         new
                         {
                             DepartmentId = 1,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7495),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2444),
                             DepartmentManager = "Head IT",
                             DepartmentName = "IT Department",
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7496)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(2446)
                         });
                 });
 
@@ -296,56 +299,56 @@ namespace STRATEGY.WEBAPI.Migrations
                         {
                             PermissionId = 1,
                             Create = true,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7253),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1953),
                             Delete = true,
                             PermissionName = "Admin",
                             Update = true,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7271)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1975)
                         },
                         new
                         {
                             PermissionId = 2,
                             Create = true,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7273),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1980),
                             Delete = true,
                             PermissionName = "User",
                             Update = true,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7274)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1982)
                         },
                         new
                         {
                             PermissionId = 3,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7276),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1986),
                             Delete = false,
                             PermissionName = "Visitor",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7277)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1988)
                         },
                         new
                         {
                             PermissionId = 4,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7279),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1992),
                             Delete = false,
                             PermissionName = "Team",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7280)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1993)
                         },
                         new
                         {
                             PermissionId = 5,
                             Create = false,
-                            CreateDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7282),
+                            CreateDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1997),
                             Delete = false,
                             PermissionName = "Pteam",
                             Update = false,
                             UpdatedBy = 0,
-                            UpdatedDate = new DateTime(2025, 10, 29, 9, 43, 24, 442, DateTimeKind.Local).AddTicks(7282)
+                            UpdatedDate = new DateTime(2025, 10, 29, 9, 12, 19, 630, DateTimeKind.Local).AddTicks(1999)
                         });
                 });
 
