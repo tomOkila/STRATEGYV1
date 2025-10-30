@@ -373,10 +373,10 @@ namespace STRATEGY.WEBAPI.Contract
 
         public async  Task<GeneralResponse> DeletePlanAsync(Plan model)
         {
-            var respDetail = await _appDbContext.StrategicPlans.FindAsync(model.PlanID);
+            var respDetail = await _appDbContext.Plans.FindAsync(model.PlanID);
             if (respDetail == null)
                 return new GeneralResponse(false, "Plan not found");
-            _appDbContext.StrategicPlans.Remove(respDetail);
+            _appDbContext.Plans.Remove(respDetail);
             await _appDbContext.SaveChangesAsync();
             return new GeneralResponse(true, "Plan Deleted Successfully");
         }
