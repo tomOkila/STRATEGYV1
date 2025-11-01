@@ -377,6 +377,28 @@ namespace STRATEGY.WEBAPI.Contract
             if (respDetail == null)
                 return new GeneralResponse(false, "Plan not found");
             _appDbContext.Plans.Remove(respDetail);
+
+
+
+            var entities = _appDbContext.PlanDocuments
+                               .Where(e => e.PlanID == model.PlanID)
+                               .ToList();
+
+            foreach (var item in entities)
+            {
+                var respDoc = await _appDbContext.PlanDocuments.FindAsync(item.PlanDocumentId);
+                if (respDoc == null)
+                    return new GeneralResponse(false, "Plan not found");
+                _appDbContext.Plans.Remove(respDetail);
+
+                var docPath = _config.GetConnectionString("PLAN_UPLOADFILE_PATH") + item.DocumentName;
+                //remove document from folder
+                if (File.Exists(docPath))
+                {
+                    File.Delete(docPath);
+                }
+            }
+
             await _appDbContext.SaveChangesAsync();
             return new GeneralResponse(true, "Plan Deleted Successfully");
         }
