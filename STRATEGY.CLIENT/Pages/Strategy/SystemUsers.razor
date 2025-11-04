@@ -302,7 +302,7 @@
 
                 <RadzenFormField Text="Password" Variant="Variant.Outlined">
                     <ChildContent>
-                        <RadzenPassword id="Password" Name="Password" @bind-Value=appuser.Password />
+                        <RadzenPassword  Name="Password" @bind-Value=appuser.Password />
                     </ChildContent>
                     <Helper>
                         <RadzenRequiredValidator Component="Password" Text="Password is required." />
@@ -311,7 +311,7 @@
                 </RadzenFormField>
                 <RadzenFormField Text="ConfirmPassword" Variant="Variant.Outlined">
                     <ChildContent>
-                        <RadzenPassword id="ConfirmPassword" Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
+                        <RadzenPassword  Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
                     </ChildContent>
                     <Helper>
                         <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm password is required." />

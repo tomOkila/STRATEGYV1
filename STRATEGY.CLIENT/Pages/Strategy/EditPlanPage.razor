@@ -595,8 +595,8 @@
     async Task Save()
     {
 
-        editPlan.DepartmentID = SessionDepartmentID;
-        editPlan.UserName = SessionName;
+        editPlan.DepartmentID = plan.DepartmentID;
+        editPlan.UserName = plan.UserName;
         editPlan.WitnessName = fileNames;
 
         try

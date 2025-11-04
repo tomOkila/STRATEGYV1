@@ -45,7 +45,7 @@
 
                         <RadzenFormField Text="Password" Variant="Variant.Outlined">
                             <ChildContent>
-                                <RadzenPassword id="Password" Name="Password" @bind-Value=appuser.Password />
+                                <RadzenPassword Max  Name="Password" @bind-Value=appuser.Password />
                             </ChildContent>
                             <Helper>
                                 <RadzenRequiredValidator Component="Password" Text="Password is required." />
@@ -54,11 +54,12 @@
                         </RadzenFormField>
                         <RadzenFormField Text="ConfirmPassword" Variant="Variant.Outlined">
                             <ChildContent>
-                                <RadzenPassword id="ConfirmPassword" Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
+                                <RadzenPassword  Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
                             </ChildContent>
                             <Helper>
                                 <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm password is required." />
-                                <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(appuser.ConfirmPassword)) Value=appuser.Password Component="ConfirmPassword" Text="Passwords should be the same" Style="position: absolute" />
+                                @* <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(appuser.ConfirmPassword)) Value=appuser.Password 
+                                Component="ConfirmPassword" Text="Passwords should be the same" Style="position: absolute" /> *@
                             </Helper>
                         </RadzenFormField>
 
@@ -66,7 +67,7 @@
                         <RadzenDropDown Data=@approles
                                         @bind-Value=appuser.RoleId
                                         TextProperty="RoleName"
-                                        AllowFiltering="true"
+                                        AllowFiltering="true"s
                                         FilterAsYouType="true"
                                         FilterPlaceholder="Select Role"
                                         Placeholder="Select Role"
@@ -142,16 +143,16 @@
 
                         <RadzenFormField Text="Password" Variant="Variant.Outlined">
                             <ChildContent>
-                                <RadzenPassword id="Password" Name="Password" @bind-Value=appuser.Password />
+                                <RadzenPassword Name="Password" @bind-Value=appuser.Password  />
                             </ChildContent>
                             <Helper>
                                 <RadzenRequiredValidator Component="Password" Text="Password is required." />
-
+                                <RadzenLengthValidator Component="Password" Min="8" Max="128" Text="Password must be between 8 and 128 characters" />
                             </Helper>
                         </RadzenFormField>
                         <RadzenFormField Text="ConfirmPassword" Variant="Variant.Outlined">
                             <ChildContent>
-                                <RadzenPassword id="ConfirmPassword" Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
+                                <RadzenPassword  Name="ConfirmPassword" @bind-Value=appuser.ConfirmPassword />
                             </ChildContent>
                             <Helper>
                                 <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm password is required." />
