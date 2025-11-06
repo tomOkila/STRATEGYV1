@@ -8,8 +8,9 @@ namespace STRATEGY.CLIENT.Models
         [Key]
         public int DetailedId { get; set; }
         public string DetailedTargetName { get; set; } = string.Empty;
-        public string DetailedTargetHistory { get; set; } = string.Empty;
-        public string DetailedScorerName { get; set; } = string.Empty;
+        //public string DetailedTargetHistory { get; set; } = string.Empty;
+        public DateTime DetailedGoalScoreDate { get; set; }
+        public string DetailedTargetRegistrantName { get; set; } = string.Empty;
         public int SOId { get; set; }
 
         [ForeignKey(nameof(SOId))]

@@ -263,8 +263,8 @@ namespace STRATEGY.WEBAPI.Contract
             _appDbContext.DetailedSO.Add(new DetailedSO()
             {
                 DetailedTargetName = model.DetailedTargetName,
-                DetailedTargetHistory = model.DetailedTargetHistory,
-                DetailedScorerName = model.DetailedScorerName,
+                DetailedGoalScoreDate = model.DetailedGoalScoreDate,
+                DetailedTargetRegistrantName = model.DetailedTargetRegistrantName,
                 SOId = model.SOId,
                 CreateDate = DateTime.Now
             });
@@ -602,8 +602,8 @@ await _appDbContext.Pillars.ToListAsync();
             else
             {
                 emp.DetailedTargetName = model.DetailedTargetName;
-                emp.DetailedTargetHistory = model.DetailedTargetHistory;
-                emp.DetailedScorerName = model.DetailedScorerName;
+                emp.DetailedGoalScoreDate = model.DetailedGoalScoreDate;
+                emp.DetailedTargetRegistrantName = model.DetailedTargetRegistrantName;
                 emp.SOId = model.SOId;
                 emp.CreateDate = emp.CreateDate;
                 emp.UpdatedBy = model.UpdatedBy;

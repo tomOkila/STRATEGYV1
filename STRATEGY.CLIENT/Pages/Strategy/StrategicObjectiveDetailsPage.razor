@@ -184,9 +184,9 @@ TItem="DetailedSO" Style="margin:5px;">
             <br />
             <RadzenLabel><b>Pillar Name: </b> @strategicObjectiveDetail.StrategicObjective.TargetName</RadzenLabel>
             <br />
-            <RadzenLabel><b>Detailed Target History: </b> @strategicObjectiveDetail.DetailedTargetHistory</RadzenLabel>
+                <RadzenLabel><b>Detailed GoalScore Date: </b> @strategicObjectiveDetail.DetailedGoalScoreDate</RadzenLabel>
             <br />
-            <RadzenLabel><b>Detailed Scorer Name: </b> @strategicObjectiveDetail.DetailedScorerName</RadzenLabel>
+                <RadzenLabel><b>Detailed Target RegistrantName: </b> @strategicObjectiveDetail.DetailedTargetRegistrantName</RadzenLabel>
         </RadzenCard>
         <hr />
 
@@ -232,7 +232,8 @@ TItem="DetailedSO" Style="margin:5px;">
         DeleteId = 0;
         StateHasChanged();
         DialogService1.Close();
-        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
+        await GetDetailedStrategicObjectives();
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = response.Message, Detail = "", Duration = 2000, CloseOnClick = true, Payload = DateTime.Now });
     }
 
 
@@ -263,21 +264,21 @@ TItem="DetailedSO" Style="margin:5px;">
                 </RadzenDropDown>
                 <RadzenRequiredValidator DefaultValue="0" Style="padding-left:12px;margin:0px;padding-top:0px;" Component="TargetName" Text="Target Name is required." />
 
-                <RadzenFormField Text="Detailed Target History" Variant="Variant.Outlined">
+                    <RadzenFormField Text="Detailed GoalScore Date" Variant="Variant.Outlined">
                     <ChildContent>
-                        <RadzenTextBox Name="DetailedTargetHistory" @bind-Value=strategicObjectiveDetail.DetailedTargetHistory />
+                            <RadzenDatePicker Name="DetailedGoalScoreDate" @bind-Value=strategicObjectiveDetail.DetailedGoalScoreDate AllowClear="true" ShowButton="false" />
                     </ChildContent>
                     <Helper>
-                        <RadzenRequiredValidator Component="DetailedTargetHistory" Text="Detailed Target History is required." />
+                            <RadzenRequiredValidator Component="DetailedGoalScoreDate" Text="Detailed GoalScore Date is required." />
                     </Helper>
                 </RadzenFormField>
 
-                <RadzenFormField Text="Detailed Scorer Name" Variant="Variant.Outlined">
+                    <RadzenFormField Text="Detailed Target RegistrantName" Variant="Variant.Outlined">
                     <ChildContent>
-                        <RadzenTextBox Name="DetailedScorerName" @bind-Value=strategicObjectiveDetail.DetailedScorerName />
+                            <RadzenTextBox Disabled Name="DetailedTargetRegistrantName" @bind-Value=SessionName />
                     </ChildContent>
                     <Helper>
-                        <RadzenRequiredValidator Component="DetailedScorerName" Text="Detailed Scorer Name is required." />
+                            <RadzenRequiredValidator Component="DetailedTargetRegistrantName" Text="Detailed Target RegistrantName is required." />
                     </Helper>
                 </RadzenFormField>
 
